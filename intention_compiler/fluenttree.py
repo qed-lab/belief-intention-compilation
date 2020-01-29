@@ -4,6 +4,7 @@ import re
 
 class FluentTree(PDDLPart.PDDLPart):
 
+    # TODO: A logically sound equality function (make sure python "set" uses it!)
     def __init__(self, to_parse, depth=0):
         super().__init__(to_parse)
         self.depth = depth
@@ -38,10 +39,18 @@ class FluentTree(PDDLPart.PDDLPart):
                 leaves = leaves + child.leaves()
             return leaves
 
+    # TODO: Deal with "NOT" predicates
     def predicates(self):
         result = set()
         for leaf in self.leaves():
             if not leaf.is_intends:
+                result.add(leaf.identifier)
+        return result
+
+    def intentional_effects(self):
+        result = set()
+        for leaf in self.leaves():
+            if leaf.is_intends:
                 result.add(leaf.identifier)
         return result
 
