@@ -35,7 +35,7 @@ class FluentTree(PDDLPart.PDDLPart):
             return [self]
         else:
             leaves = list()
-            for child in self.children:
+            for child in self.child_preconditions:
                 leaves = leaves + child.leaves()
             return leaves
 
@@ -56,6 +56,7 @@ class FluentTree(PDDLPart.PDDLPart):
 
 
 
+#TODO: Why does this have a foreach loop?
 def first_word(s):
     tokens = re.split(r"\s", s)
     for token in tokens:

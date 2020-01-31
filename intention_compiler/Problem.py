@@ -1,5 +1,6 @@
 import fluenttree
 import PDDLPart
+import Utils
 import re
 
 
@@ -18,6 +19,6 @@ class Problem(PDDLPart.PDDLPart):
             elif identifier == ":init":
                 self.init_state = PDDLPart.PDDLPart(child).children
             elif identifier == ":goal":
-                self.goal = fluenttree.FluentTree(PDDLPart.find_child(child)[0])
+                self.goal = fluenttree.FluentTree(Utils.find_child(child)[0])
 
 

@@ -1,5 +1,6 @@
 import argparse
 import PDDLPart
+import Utils
 import Domain
 import Problem
 from compilation import CompiledProblem
@@ -37,7 +38,7 @@ if __name__ == '__main__':
             if trimmed:
                 domain_string += trimmed + '\n'
     verify_parens(domain_string)
-    child, _ = PDDLPart.find_child(domain_string)
+    child, _ = Utils.find_child(domain_string)
     # print(child)
 
     with open(arguments.problem) as probF:
@@ -47,7 +48,7 @@ if __name__ == '__main__':
                 prob_string += trimmed + '\n'
 
     verify_parens(prob_string)
-    problem_child, _ = PDDLPart.find_child(prob_string)
+    problem_child, _ = Utils.find_child(prob_string)
 
     prob = Problem.Problem(problem_child)
     dom = Domain.Domain(child)
@@ -57,6 +58,10 @@ if __name__ == '__main__':
     for kid in dom.predicates:
         print("<" + kid.replace('\n', ' | ') + ">")
     dom.print_actions()
+
+    compilation = CompiledProblem(dom, prob)
+
+    print(compilation.compiled_domain())
 
 
 

@@ -13,6 +13,8 @@ class Parameter:
             self.key = trimmed
             self.type = None
 
+    def __str__(self):
+        return self.string
 
 def parameter_list(s):
     split = s.split("?")
