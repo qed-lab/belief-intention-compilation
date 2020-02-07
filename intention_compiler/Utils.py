@@ -20,6 +20,7 @@ def get_question_mark_sections(to_split):
     return tokens
 
 
+
 def find_child(to_parse):
 
     count = 0
@@ -38,6 +39,6 @@ def find_child(to_parse):
         remaining_string = remaining_string[split + 1:]
         running_idx += split + 1
         if count == 0:
-            print(right_idx)
+            # print(right_idx)
             return to_parse[start_idx+1:running_idx - 1], running_idx + 1
     return '', -1

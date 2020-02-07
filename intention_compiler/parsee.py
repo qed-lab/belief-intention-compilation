@@ -53,15 +53,15 @@ if __name__ == '__main__':
     prob = Problem.Problem(problem_child)
     dom = Domain.Domain(child)
 
-    print(dom.string)
-    print("------------")
-    for kid in dom.predicates:
-        print("<" + kid.replace('\n', ' | ') + ">")
-    dom.print_actions()
+    # print(dom.string)
+    # print("------------")
+    # for kid in dom.predicates:
+    #     print("<" + kid.replace('\n', ' | ') + ">")
+    # dom.print_actions()
 
     compilation = CompiledProblem(dom, prob)
 
-    print(compilation.compiled_domain())
+    print(compilation.compiled_domain().to_pddl())
 
 
 

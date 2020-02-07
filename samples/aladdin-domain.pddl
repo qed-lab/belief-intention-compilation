@@ -29,7 +29,7 @@
     :parameters   (?character - character ?from - place ?to - place)
 	:precondition (and (not (= ?from ?to))
                        (alive ?character)
-                       (at ?character ?from))
+                       (at ?character ?from));A closer midline comment
 	:effect       (and (not (at ?character ?from))
                        (at ?character ?to))
     :agents       (?character))
@@ -141,7 +141,7 @@
                        (alive ?knight)
                        (at ?knight ?place)
                        (loyal-to ?knight ?king))
-    :effect       (and (intends ?knight ?objective)
+    :effect       (and (intends ?knight ?objective);A close midline comment
                        (delegated ?king ?objective ?knight))
     :agents       (?king))
 
