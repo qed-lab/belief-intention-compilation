@@ -49,7 +49,7 @@ class Domain(PDDLPart.PDDLPart):
     {self.type_string}
     )
     (:predicates
-    {(nl+tab+tab).join(self.predicates)}
+    {(nl+tab+tab).join([str(p) for p in self.predicates])}
     )
     {nl.join([str(x) for x in self.actions])}
 )

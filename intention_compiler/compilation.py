@@ -1,7 +1,9 @@
 import Domain
 import Problem
 import Operator
+import fluenttree
 import itertools
+
 
 class CompiledProblem:
     def __init__(self, domain, problem):
@@ -38,7 +40,7 @@ class CompiledProblem:
         #     intentions.update(action.effect.intentional_effects())
         # # for
         # return intentions
-        return domain.predicates
+        return self.domain.predicates
 
 
     def compiled_domain(self):
@@ -57,7 +59,7 @@ class CompiledProblem:
         dom.requirements = self.domain.requirements
         dom.requirements.remove(":intentionality")
         dom.requirements.remove(":delegation")
-        dom.requirements.append(":adl") #May have to remove and add back in if double-adding is bad
+        dom.requirements.append(":adl") #TODO: May have to remove and add back in if double-adding is bad
 
         # Same types
         dom.type_string = self.domain.type_string
@@ -69,7 +71,7 @@ class CompiledProblem:
         # Non-agent actions
         dom.actions = [a for a in self.domain.actions if len(a.agents) == 0]
 
-        # dom.actions += self.get_compiled_actions()
+        dom.actions += self.get_compiled_actions()
 
 
 
@@ -78,16 +80,50 @@ class CompiledProblem:
 
     def get_compiled_actions(self):
         intentional_actions = [a for a in self.domain.actions if len(a.agents) != 0]
+        compiled_actions = []
+        for act in intentional_actions:
+            compiled_actions += self.get_compiled_actions_of_action(act)
+        return compiled_actions
 
 
     def get_compiled_actions_of_action(self, action):
         # Get relevant effects from within this action
-        possible_and_relevant_effects = self.possible_effects_of_action(action).intersect(self.relevant_effects)
+        possible_and_relevant_effects = self.possible_effects_of_action(action).intersection(self.relevant_effects)
         possible_intentions = self.possible_intentions
 
         combos = itertools.product(possible_and_relevant_effects, possible_intentions)
 
+        actions = []
+        for effect, intent in combos:
+            effect_name = f"{'not-' if effect.is_not else ''}{'intends-' if effect.is_intends else ''}{'eq' if effect.identifier=='=' else effect.identifier}"
+            act_name = f"{action.name}-for-{effect_name}-because-intends-{intent.identifier}"
 
+            parameters = action.parameters + [f"intent-param-{i}" for i in range(intent.arity)]
+
+            preconditions = fluenttree.FluentTree("(and )")
+            preconditions.is_leaf = False
+            preconditions.child_preconditions.append(action.precondition)
+            # TODO: What about multi-agent actions???
+            preconditions.child_preconditions.append(fluenttree.FluentTree(
+                f"(intends-{intent.identifier} {action.agents[0]} {' '.join([f'intent-param-{i}' for i in range(intent.arity)])})" ))
+
+            # TODO: Delegate preconditions are complex
+
+            effects = fluenttree.FluentTree("(and )")
+            effects.is_leaf = False
+            effects.child_preconditions.append(action.effect) # TODO: Modify effect to flatten (intends ?a (pred ?x ?y)) -> (intends-pred ?a ?x ?y)
+
+            # TODO: (justified-prec-intends-intent ?prec-params ?actor ?intent-params) for all preconditions.
+            #  Tricky if preconditions not simple list, or are not-ed
+
+
+            new_action = Operator.Operator(None)
+            new_action.name = act_name
+            new_action.parameters = parameters
+            new_action.precondition = preconditions
+            new_action.effect = effects
+            actions.append(new_action)
+        return actions
 
 
 """ NOTES:

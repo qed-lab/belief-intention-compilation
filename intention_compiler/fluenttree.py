@@ -34,6 +34,7 @@ class AbstractPredicate:
                 self.is_not = True
                 self.is_intention = True
                 intention = leaf.child_preconditions[0]
+                # TODO: This is an issue for ungrounded (intends ?a ?intent) predicates
                 intended_predicate = intention.child_preconditions[0]
                 self.identifier = intended_predicate.identifier
                 self.arity = len(intended_predicate.words)-1
@@ -61,6 +62,8 @@ class AbstractPredicate:
         res = f"({res})"
         return res
 
+    def __str__(self):
+        return self.__repr__()
     # def __eq__(self, other):
     #     if isinstance(other, self.__class__):
     #         return self.is_not == other.is_not \
@@ -100,7 +103,12 @@ class FluentTree(PDDLPart.PDDLPart):
                 # if len(self.children) != 2:
                 #     raise SyntaxError(f"Intentional action '{self.string}' should have two children: an actor and a predicate. It has {len(self.children)}.")
                 self.actor = self.words[1]
-                self.child_preconditions.append(FluentTree(self.children[0], depth + 1))
+                if len(self.children) == 1:
+                    self.child_preconditions.append(FluentTree(self.children[0], depth + 1))
+                elif len(self.children) == 0:
+                    pass
+                else:
+                    raise SyntaxError("Intends predicates should have a parameter or one predicate. \ne.g. (intends ?actor ?intention) or (intends ?actor (predicate ?x ?y))")
 
         else:
             self.is_not = self.identifier.lower() == "not"
