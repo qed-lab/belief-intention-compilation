@@ -4,7 +4,7 @@
 ;;; Ported to PDDL 3 by Stephen G. Ware
 ;;;
 (define (problem six-rooms)
-    (:domain rooms-c1)
+    (:domain rooms-c2)
     (:objects
         alice - character
         informant1 - character
@@ -49,6 +49,12 @@
         ;(believes-in letter1 star r5)
         ;(believes-in letter2 key r4)
         ;(believes-unlocked-by letter2 r5 key)
+
+
+        (intends alice (has alice star))
+        ;(intends informant2 (not (locked r5)))
+        ;(intends informant1 (believes-in alice star r5))
+
 
 
     )

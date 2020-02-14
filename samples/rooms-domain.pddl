@@ -4,7 +4,7 @@
 ;;; Ported to PDDL 3 and modified to use the 'delegated' modality by Stephen G. Ware
 ;;;
 (define (domain rooms)
-    (:requirements :adl :domain-axioms :expression-variables :intentionality :belief)
+    (:requirements :adl :universal-preconditions :expression-variables :intentionality :belief)
     (:types
         letter key star - thing
         character room thing
