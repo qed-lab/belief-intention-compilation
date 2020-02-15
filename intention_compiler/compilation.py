@@ -21,9 +21,9 @@ class CompiledProblem:
     # TODO: Treat intends effects specially
     def find_relevant_effects(self):
         rel_effects = set()
-        rel_effects.union(self.problem.goal.abstracted_predicates())
+        rel_effects.update(self.problem.goal.abstracted_predicates())
         for act in self.domain.actions:
-            rel_effects.union(act.precondition.abstracted_predicates())
+            rel_effects.update(act.precondition.abstracted_predicates())
         return rel_effects
 
     # TODO: Store effects as the predicate name, arity, and if "not"-ed
@@ -49,7 +49,8 @@ class CompiledProblem:
         # New name
         dom.name = self.domain.name + "-compiled"
 
-        dom.prelude = f""";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+        dom.prelude = f"""{self.domain.prelude}
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; The domain "{self.domain.name}", compiled for use in planners{" "*max(21-len(self.domain.name), 0)};;;
 ;;;  that do not support intention.                                 ;;;
 ;;; Uses the compilation defined by Patrik Haslum (2012)            ;;;
@@ -94,13 +95,13 @@ class CompiledProblem:
         combos = itertools.product(possible_and_relevant_effects, possible_intentions)
 
         actions = []
-        for effect, intent in combos:
-            effect_name = f"{'not-' if effect.is_not else ''}{'intends-' if effect.is_intends else ''}{'eq' if effect.identifier=='=' else effect.identifier}"
+        for effect, intent in list(combos):
+            effect_name = f"{'not-' if effect.is_not else ''}{'intends-' if effect.is_intention else ''}{'eq' if effect.identifier=='=' else effect.identifier}"
             act_name = f"{action.name}-for-{effect_name}-because-intends-{intent.identifier}"
 
             parameters = action.parameters + [f"intent-param-{i}" for i in range(intent.arity)]
 
-            preconditions = fluenttree.FluentTree("(and )")
+            preconditions = fluenttree.FluentTree("and ")
             preconditions.is_leaf = False
             preconditions.child_preconditions.append(action.precondition)
             # TODO: What about multi-agent actions???
@@ -109,7 +110,7 @@ class CompiledProblem:
 
             # TODO: Delegate preconditions are complex
 
-            effects = fluenttree.FluentTree("(and )")
+            effects = fluenttree.FluentTree("and ")
             effects.is_leaf = False
             effects.child_preconditions.append(action.effect) # TODO: Modify effect to flatten (intends ?a (pred ?x ?y)) -> (intends-pred ?a ?x ?y)
 

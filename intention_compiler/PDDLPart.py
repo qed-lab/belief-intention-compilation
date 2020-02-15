@@ -12,6 +12,6 @@ class PDDLPart:
         while new_start >= 0:
             remaining = remaining[new_start:]
             result.append(child)
-            child, new_start = Utils.find_child(remaining)
+            child, new_start = Utils.find_child(remaining) #TODO: Fix bug where "and" is turning into "(an)"
         return result
 

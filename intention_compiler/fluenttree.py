@@ -15,6 +15,9 @@ class AbstractPredicate:
                 self.types.append(param.split(" - ")[1])
             self.is_not = False
             self.is_intention = False
+            self.intention_is_not = False
+            self.is_belief = False
+
 
 
         elif isinstance(leaf, FluentTree):
@@ -30,7 +33,7 @@ class AbstractPredicate:
                 self.arity = len(leaf.child_preconditions[0].words)-1
 
             # E.g "not( intends ?agent (predicate ?x ?y ?z)) "
-            if leaf.is_not and leaf.child_preconditions[0].is_intends:
+            if leaf.is_not and leaf.child_preconditions[0].is_intends  and len(leaf.child_preconditions[0].child_preconditions)==1:
                 self.is_not = True
                 self.is_intention = True
                 intention = leaf.child_preconditions[0]
@@ -39,13 +42,30 @@ class AbstractPredicate:
                 self.identifier = intended_predicate.identifier
                 self.arity = len(intended_predicate.words)-1
 
-            # E.g "intends ?agent (predicate ?x ?y ?z) "
-            if (not leaf.is_not) and leaf.is_intends:
+            # E.g "intends ?agent (predicate ?x ?y ?z)"
+            if (not leaf.is_not) and leaf.is_intends and len(leaf.child_preconditions)==1:
                 self.is_not = False
                 self.is_intention = True
                 intended_predicate = leaf.child_preconditions[0]
                 self.identifier = intended_predicate.identifier
                 self.arity = len(intended_predicate.words)-1
+
+            # E.g "not( intends ?agent ?intent) "
+            if leaf.is_not and leaf.child_preconditions[0].is_intends and len(leaf.child_preconditions[0].child_preconditions)==0:
+                self.is_not = True
+                self.is_intention = True
+                intention = leaf.child_preconditions[0]
+                # intended_predicate = intention.child_preconditions[0]
+                self.identifier = None
+                self.arity = 0
+
+            # E.g "intends ?agent ?intent"
+            if (not leaf.is_not) and leaf.is_intends and len(leaf.child_preconditions)==0:
+                self.is_not = False
+                self.is_intention = True
+                # intended_predicate = leaf.child_preconditions[0]
+                self.identifier = None
+                self.arity = 0
 
             # E.g "predicate ?x ?y ?z "
             if (not leaf.is_not) and (not leaf.is_intends):
