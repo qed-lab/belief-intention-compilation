@@ -26,4 +26,37 @@ class TestFluentTreeStuff(TestCase):
         debound = ft.abstracted_predicates()
         # for db in debound:
             # self.assertNotEqual(db.identifier, "not")
-        print("HEY")
+
+
+    def testAbstractPredicate(self):
+
+        # test_string = """(and
+        # (believes ?jim (at ?it ?place))
+        # (believes ?jim ?belief)
+        # (intends ?jim (at ?the ?place))
+        # (intends ?jim ?intent)
+        # (intends ?jim (not (at ?the ?place)))
+        # (not (intends ?jim (at ?the ?place)))
+        # (not (intends ?jim ?intent))
+        # (not (intends ?jim (not (at ?the ?place))))
+        # )"""
+        test_string = """(and
+        (believes ?jim (at ?the ?place))
+        (believes ?jim ?belief)
+        (intends ?jim (at ?the ?place))
+        (intends ?jim ?intent)
+        (intends ?jim ?otherintent)
+        (not (intends ?jim (at ?the ?place)))
+        (not (intends ?jim ?intent))
+        (at ?the ?place)
+        )"""
+
+        ft = FluentTree(test_string)
+
+        dem_preds = ft.abstracted_predicates()
+
+        for pred in dem_preds:
+            print(pred.__str__())
+            print(pred.__repr__())
+
+        

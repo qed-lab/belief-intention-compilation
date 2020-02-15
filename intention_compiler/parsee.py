@@ -3,7 +3,7 @@ import PDDLPart
 import Utils
 import Domain
 import Problem
-from compilation import CompiledProblem
+from compilation import HaslumCompilation
 
 
 def verify_parens(domain_string):
@@ -59,7 +59,7 @@ if __name__ == '__main__':
     #     print("<" + kid.replace('\n', ' | ') + ">")
     # dom.print_actions()
 
-    compilation = CompiledProblem(dom, prob)
+    compilation = HaslumCompilation(dom, prob)
 
     print(compilation.compiled_domain().to_pddl())
 
