@@ -17,7 +17,7 @@ class Problem(PDDLPart.PDDLPart):
             elif identifier == ":objects":
                 self.objects = child
             elif identifier == ":init":
-                self.init_state = PDDLPart.PDDLPart(child).children
+                self.init_state = [fluenttree.AbstractPredicate(c) for c in PDDLPart.PDDLPart(child).children]
             elif identifier == ":goal":
                 self.goal = fluenttree.FluentTree(Utils.find_child(child)[0])
 
