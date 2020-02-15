@@ -69,7 +69,8 @@
                 (believes-at ?character ?character ?roomfrom)
                 (not (and
                     (not (locked ?roomto))
-                    (at ?character ?roomfrom))
+                    (at ?character ?roomfrom)
+                    )
                 )
             )
         :effect
