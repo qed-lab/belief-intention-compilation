@@ -5,7 +5,7 @@ import fluenttree
 import itertools
 
 
-class CompiledProblem:
+class HaslumCompilation:
     def __init__(self, domain, problem):
         self.domain = domain
         self.problem = problem

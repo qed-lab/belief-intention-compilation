@@ -10,7 +10,8 @@
           knight king - male
           genie dragon - monster
           magic-lamp the-one-ring - thing)
-  (:predicates (alive ?character - character)
+  (:predicates
+               (alive ?character - character)
                (scary ?monster - monster)
                (beautiful ?character - character)
                (confined ?character - character)
