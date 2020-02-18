@@ -59,4 +59,3 @@ class TestFluentTreeStuff(TestCase):
             print(pred.__str__())
             print(pred.__repr__())
 
-        

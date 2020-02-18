@@ -249,9 +249,9 @@ class FluentTree(PDDLPart.PDDLPart):
         return result
 
     def abstracted_predicates(self):
-        result = set()
+        result = []
         for leaf in self.leaves_including_not():
-            result.add(AbstractPredicate(leaf))
+            result.append(AbstractPredicate(leaf))
         return result
 
 
