@@ -42,3 +42,13 @@ def find_child(to_parse):
             # print(right_idx)
             return to_parse[start_idx+1:running_idx - 1], running_idx + 1
     return '', -1
+
+
+def get_trimmed_string_from_file(file):
+    res = ''
+    with open(file) as f:
+        for line in f:
+            trimmed = line[:line.find(';') if line.find(';') >= 0 else len(line)].strip()
+            if trimmed:
+                res += trimmed + '\n'
+    return res

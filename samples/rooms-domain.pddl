@@ -14,7 +14,7 @@
         (at ?character - character ?room - room)
         (unlocked-by ?room - room ?key - key)
         (in ?thing - thing ?room - room)
-        (hidden ?thing)
+        (hidden ?thing - thing)
         (has ?character - character ?thing - thing)
     )
 

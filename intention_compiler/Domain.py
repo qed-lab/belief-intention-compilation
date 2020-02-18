@@ -22,7 +22,7 @@ class Domain(PDDLPart.PDDLPart):
                     self.type_string = child.replace(":types", "")
                 elif identifier == ':predicates':
                     # self.predicates = PDDLPart.PDDLPart(child).children  # TODO: Map these to their own objects eventually?
-                    self.predicates = [fluenttree.AbstractPredicate(ch) for ch in PDDLPart.PDDLPart(child).children ]
+                    self.predicates = [fluenttree.AbstractPredicate(ch) for ch in PDDLPart.PDDLPart(child).children]
                 elif identifier == ':action':
                     self.actions.append(Operator.Operator(child))
             self.summary = self.name + "\nPredicates: " + str(len(self.predicates)) + "\nActions: " + str(len(self.actions))

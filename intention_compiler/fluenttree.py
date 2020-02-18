@@ -20,6 +20,7 @@ class AbstractPredicate:
                 self.is_intention = False
                 self.intention_is_not = False
                 self.is_belief = False
+                self.has_expression_parameter = False
             else: # Parse from string, no types
                 self.identifier = first_word(leaf)
                 tokens = re.split(r" ", leaf)
@@ -30,10 +31,10 @@ class AbstractPredicate:
                 self.is_intention = False
                 self.intention_is_not = False
                 self.is_belief = False
+                self.has_expression_parameter = False
 
 
         elif isinstance(leaf, FluentTree):
-
             if not (leaf.is_leaf or (leaf.is_not and len(leaf.child_preconditions)==1 and leaf.child_preconditions[0].is_leaf)):
                 raise SyntaxError("Tried to debind a predicate that was not a leaf")
             self.is_not = False
