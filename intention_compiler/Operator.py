@@ -27,6 +27,8 @@ class Operator(PDDLPart.PDDLPart):
                     self.precondition = fluenttree.FluentTree(Utils.find_child(token)[0])
                 elif title == ":effect":
                     self.effect = fluenttree.FluentTree(Utils.find_child(token)[0])
+                elif title == ":fail":
+                    self.fail = fluenttree.FluentTree(Utils.find_child(token)[0])
                 elif title == ":agents":
                     self.agents = Utils.get_question_mark_sections(Utils.find_child(token)[0])
         else:

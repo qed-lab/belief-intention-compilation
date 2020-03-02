@@ -103,16 +103,16 @@ class HaslumCompilation:
 
             preconditions = fluenttree.FluentTree("and ")
             preconditions.is_leaf = False
-            preconditions.child_preconditions.append(action.precondition)
+            preconditions.child_trees.append(action.precondition)
             # TODO: What about multi-agent actions???
-            preconditions.child_preconditions.append(fluenttree.FluentTree(
+            preconditions.child_trees.append(fluenttree.FluentTree(
                 f"(intends-{intent.identifier} {action.agents[0]} {' '.join([f'intent-param-{i}' for i in range(intent.arity)])})" ))
 
             # TODO: Delegate preconditions are complex
 
             effects = fluenttree.FluentTree("and ")
             effects.is_leaf = False
-            effects.child_preconditions.append(action.effect) # TODO: Modify effect to flatten (intends ?a (pred ?x ?y)) -> (intends-pred ?a ?x ?y)
+            effects.child_trees.append(action.effect) # TODO: Modify effect to flatten (intends ?a (pred ?x ?y)) -> (intends-pred ?a ?x ?y)
 
             # TODO: (justified-prec-intends-intent ?prec-params ?actor ?intent-params) for all preconditions.
             #  Tricky if preconditions not simple list, or are not-ed

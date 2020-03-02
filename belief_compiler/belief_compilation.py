@@ -2,6 +2,8 @@ import Domain
 import fluenttree
 import Utils
 import Problem
+from Operator import Operator
+from copy import deepcopy
 import parsee
 
 class BeliefCompiledProblem():
@@ -36,7 +38,14 @@ class BeliefCompiledProblem():
 
 
     def find_actions(self):
-        pass
+        actions = []
+        for act in self.compiled_domain.actions:
+            if len(act.agents) == 0:
+                actions.append(act)
+            else:
+                generate_belief_action(act, "success")
+                generate_belief_action(act, "fail")
+
 
     def find_predicates(self):
         base_preds = self.base_domain.predicates
@@ -54,6 +63,85 @@ class BeliefCompiledProblem():
 
 
         return state
+
+
+def generate_belief_action(original_action, suffix):
+    """
+    Creates a new Operator object with all preconditions converted into belief preconditions.
+    :param original_action:
+    :param suffix:
+    :return:
+    """
+    dupe = Operator(None)
+    dupe.name = original_action.name + "_" + suffix
+    dupe.agents = original_action.agents
+    dupe.parameters = original_action.parameters
+
+    belief_sets = []
+    for agent in original_action.agents:
+        copied_preconditions = deepcopy(original_action.precondition)
+        make_beleaves(copied_preconditions, agent)
+        belief_sets.append(copied_preconditions)
+    # dupe.precondition = convert_to_belief_string(original_action.precondition)
+    dupe.precondition = fluenttree.FluentTree("and ")
+    dupe.precondition.is_leaf = False
+    dupe.precondition.child_trees += belief_sets
+
+    if suffix == "success":
+        dupe.precondition.child_trees.append(deepcopy(original_action.precondition))
+        dupe.effect = convert_effects( original_action.effect, original_action.agents)
+
+    elif suffix == "fail":
+        prec_not_met_tree = fluenttree.FluentTree("not ")
+        prec_not_met_tree.is_leaf = False
+        prec_not_met_tree.child_trees.append(deepcopy(original_action.precondition))
+        dupe.precondition.child_trees.append(prec_not_met_tree)
+        dupe.effect = convert_effects( original_action.fail, original_action.agents)
+
+    return dupe
+
+
+def make_beleaves(ft, agent):
+    if ft.is_leaf:
+        ft.identifier = "believes_" + ft.identifier
+        ft.words.insert(1, agent)
+    else:
+        ft.child_trees = [c for c in ft.child_trees if not c.is_belief]
+        for child in ft.child_trees:
+            make_beleaves(child, agent)
+
+
+def flatten_beliefs(ft):
+    if ft.is_leaf:
+        return
+    else:
+        new_children = []
+        for c in ft.child_trees:
+            if not c.is_belief:
+                new_children.append(c)
+            else:
+                c_predicate_form = fluenttree.AbstractPredicate(c)
+                new_child = fluenttree.FluentTree("believes_" + c_predicate_form.identifier + ' ' + ' '.join(c_predicate_form.parameters))
+                new_children.append(new_child)
+        ft.child_trees = new_children
+        for c in ft.child_trees:
+            flatten_beliefs(c)
+
+
+
+def convert_effects(ft, agent_list):
+    res = fluenttree.FluentTree("and ")
+    res.is_leaf = False
+    believe_effect_sets = []
+    for agent in agent_list:
+        believe_effects = deepcopy(ft)
+        make_beleaves(believe_effects, agent)
+        believe_effect_sets.append(believe_effects)
+    flattened_effects = deepcopy(ft)
+    flatten_beliefs(flattened_effects)
+    res.child_trees += believe_effect_sets
+    res.child_trees.append(flattened_effects)
+    return res
 
 
 if __name__ == '__main__':

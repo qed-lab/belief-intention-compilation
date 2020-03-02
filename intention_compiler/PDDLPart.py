@@ -1,5 +1,6 @@
 import Utils
 
+
 class PDDLPart:
     def __init__(self, init_string):
         self.string = init_string
