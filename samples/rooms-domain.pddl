@@ -69,25 +69,25 @@
         :agents (?informant ?informed)
     )
 
-
-    ;; A character reads a letter
-    (:action read-letter
-        :parameters  (?reader - character ?letter - letter ?room - room)
-        :precondition
-            (and
-                (at ?reader ?room)
-                (in ?letter ?room)
-            )
-        :effect
-            (forall (?info - expression)
-                (when (believes ?letter ?info)
-                    (believes ?reader ?letter)
-                )
-            )
-
-        :fail ()
-        :agents (?reader)
-    )
+;;
+;;    ;; A character reads a letter
+;;    (:action read-letter
+;;        :parameters  (?reader - character ?letter - letter ?room - room)
+;;        :precondition
+;;            (and
+;;                (at ?reader ?room)
+;;                (in ?letter ?room)
+;;            )
+;;        :effect
+;;            (forall (?info - expression)
+;;                (when (believes ?letter ?info)
+;;                    (believes ?reader ?letter)
+;;                )
+;;            )
+;;
+;;        :fail ()
+;;        :agents (?reader)
+;;    )
 
 
 ;;    ;; A character convinces another to intend something. If the convincee is not friendly to the convincer, the convinced intends not the  thing
@@ -124,7 +124,7 @@
                 (has ?character ?thing)
                 (not (in ?thing ?room))
             )
-        fail:
+        :fail
             (when (and (not (in ?thing ?room)) (at ?character ?room))
                 (not (believes ?character (in ?thing ?room)))
             )

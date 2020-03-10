@@ -51,7 +51,7 @@ class AbstractPredicate:
                 self.arity = len(self.parameters)
 
             # E.g "believes ?agent ?belief"
-            if (not leaf.is_not) and leaf.is_belief and len(leaf.child_trees)==0:
+            if (not leaf.is_not) and leaf.is_belief and len(leaf.child_trees) == 0:
                 self.is_belief = True
                 self.has_expression_parameter = True
                 self.identifier = None
