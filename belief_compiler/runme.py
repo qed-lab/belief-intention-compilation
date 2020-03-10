@@ -54,6 +54,7 @@ if __name__ == '__main__':
             (and
                 (at ?character ?room)
                 (in ?thing ?room)
+                (not (in ?room ?thing))
             )
         :effect
             (and

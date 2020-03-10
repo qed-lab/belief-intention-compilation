@@ -107,6 +107,12 @@ def make_beleaves(ft, agent):  # TODO: Make special cases for "for all" and "whe
     if ft.is_leaf:
         ft.identifier = "believes_" + ft.identifier
         ft.words.insert(1, agent)
+    elif ft.is_not and len(ft.child_trees) == 1 and ft.child_trees[0].is_leaf:
+        leaf_pred = fluenttree.AbstractPredicate(ft.child_trees[0])
+        ft.identifier = "believes_not_" + leaf_pred.identifier
+        ft.words = [ft.identifier, agent] + leaf_pred.parameters
+        ft.child_trees = []
+        ft.is_leaf = True
     else:
         ft.child_trees = [c for c in ft.child_trees if not c.is_belief]
         for child in ft.child_trees:
@@ -171,6 +177,23 @@ def convert_effects_minimally(ft, agent_list):
     copied = deepcopy(ft)
     flatten_beliefs_with_not(copied)
     return copied
+
+
+def simplify_formula(ft):
+    if ft.is_leaf:
+        return
+    else:
+        if ft.identifier == 'and':
+            new_children = []
+            for c in ft.child_trees:
+                if c.identifier == 'and':
+                    new_children += c.child_trees
+                else:
+                    new_children.append(c)
+            ft.child_trees = new_children
+        for c in ft.child_trees:
+            simplify_formula(c)
+
 
 
 if __name__ == '__main__':
