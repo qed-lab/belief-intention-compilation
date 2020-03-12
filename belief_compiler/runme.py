@@ -48,7 +48,7 @@ if __name__ == '__main__':
     """
 
     test_degenerate = """
-    and ( and ( and (h 2) (h 3)
+    and ( and ( and (not (h 2)) (h 3)
             ) 
             ( and (h 1) (h 4)
             )
