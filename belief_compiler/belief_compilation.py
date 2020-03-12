@@ -91,8 +91,7 @@ def generate_belief_action(original_action, suffix):
 
     if suffix == "success":
         dupe.precondition.child_trees.append(deepcopy(original_action.precondition))
-        dupe.effect = convert_effects( original_action.effect, original_action.agents)
-
+        dupe.effect = convert_effects_minimally(original_action.effect, original_action.agents)
     elif suffix == "fail":
         prec_not_met_tree = fluenttree.FluentTree("not ")
         prec_not_met_tree.is_leaf = False
@@ -100,6 +99,7 @@ def generate_belief_action(original_action, suffix):
         dupe.precondition.child_trees.append(prec_not_met_tree)
         dupe.effect = convert_effects_minimally(original_action.fail, original_action.agents)
 
+    simplify_formula(dupe.precondition)
     return dupe
 
 
@@ -179,10 +179,13 @@ def convert_effects_minimally(ft, agent_list):
     return copied
 
 
+# TODO: If planners don't like (not (and ...)) formulae, then I'll need to add DeMorgan's here
 def simplify_formula(ft):
     if ft.is_leaf:
         return
     else:
+        for c in ft.child_trees:
+            simplify_formula(c)
         if ft.identifier == 'and':
             new_children = []
             for c in ft.child_trees:
@@ -191,9 +194,6 @@ def simplify_formula(ft):
                 else:
                     new_children.append(c)
             ft.child_trees = new_children
-        for c in ft.child_trees:
-            simplify_formula(c)
-
 
 
 if __name__ == '__main__':
