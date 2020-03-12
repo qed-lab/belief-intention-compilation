@@ -22,7 +22,9 @@ class Operator(PDDLPart.PDDLPart):
                     self.name = token.split()[1]
                     # self.name = fluenttree.first_word(token)
                 elif title == ":parameters":
-                    self.parameters = Parameter.parameter_list(Utils.find_child(token)[0])
+                    # self.parameters = Parameter.parameter_list(Utils.find_child(token)[0])
+                    self.parameters = fluenttree.AbstractPredicate("X " + Utils.find_child(token)[0])
+                    self.parameters.identifier = ""
                 elif title == ":precondition":
                     self.precondition = fluenttree.FluentTree(Utils.find_child(token)[0])
                 elif title == ":effect":
@@ -36,7 +38,7 @@ class Operator(PDDLPart.PDDLPart):
             self.base_string = "blank"
             self.name = "blank"
             self.agents = []
-            self.parameters = []
+            self.parameters = fluenttree.AbstractPredicate("")
             self.precondition = None
             self.effect = None
 
@@ -45,7 +47,7 @@ class Operator(PDDLPart.PDDLPart):
         nl = "\n"
         res = f"""
 (:action {self.name}
-    :parameters   ({" ".join([str(x) for x in self.parameters])})
+    :parameters   ({self.parameters.typed_string()})
     :precondition 
 {self.precondition.to_string(2)}
     :effect
@@ -54,3 +56,4 @@ class Operator(PDDLPart.PDDLPart):
 )
 """
         return res
+# }#" ".join([str(x) for x in self.parameters])})

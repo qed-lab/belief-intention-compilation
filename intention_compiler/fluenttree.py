@@ -134,6 +134,9 @@ class AbstractPredicate:
         res = f"({res})"
         return res
 
+    def typed_string(self):
+        return " ".join([p + " - " + t for p,t in zip(self.parameters, self.types)])
+
 
     # def __eq__(self, other):
     #     if isinstance(other, self.__class__):
@@ -203,7 +206,7 @@ class FluentTree(PDDLPart.PDDLPart):
     #         return res
 
     def to_string(self, pad=0):
-        if self.is_leaf:
+        if self.is_leaf and not (self.is_belief or self.is_intends):
             return "\t"*(self.depth+pad) + "(" + self.identifier + ' ' + " ".join(self.words[1:]) + ")"
         else:
             res = "\t"*(self.depth+pad) + "(" + self.identifier + ' ' + " ".join(self.words[1:]) + ' '

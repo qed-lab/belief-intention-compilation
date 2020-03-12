@@ -1,5 +1,6 @@
 import Domain
 import Problem
+import copy
 import Operator
 import fluenttree
 import itertools
@@ -89,7 +90,8 @@ class HaslumCompilation:
 
     def get_compiled_actions_of_action(self, action):
         # Get relevant effects from within this action
-        possible_and_relevant_effects = self.possible_effects_of_action(action).intersection(self.relevant_effects)
+        # possible_and_relevant_effects = self.possible_effects_of_action(action).intersection(self.relevant_effects)
+        possible_and_relevant_effects = [x for x in self.possible_effects_of_action(action) if x in self.relevant_effects]
         possible_intentions = self.possible_intentions
 
         combos = itertools.product(possible_and_relevant_effects, possible_intentions)
@@ -99,14 +101,17 @@ class HaslumCompilation:
             effect_name = f"{'not-' if effect.is_not else ''}{'intends-' if effect.is_intention else ''}{'eq' if effect.identifier=='=' else effect.identifier}"
             act_name = f"{action.name}-for-{effect_name}-because-intends-{intent.identifier}"
 
-            parameters = action.parameters + [f"intent-param-{i}" for i in range(intent.arity)]
+            # parameters = action.parameters + [f"intent-param-{i}" for i in range(intent.arity)]
+            parameters = copy.deepcopy( action.parameters)
+            parameters.parameters += [f"{i}-for-intent" for i in intent.parameters] #  [f"?intent-param-{i}" for i in range(intent.arity)] +
+            parameters.types += intent.types
 
             preconditions = fluenttree.FluentTree("and ")
             preconditions.is_leaf = False
             preconditions.child_trees.append(action.precondition)
             # TODO: What about multi-agent actions???
             preconditions.child_trees.append(fluenttree.FluentTree(
-                f"(intends-{intent.identifier} {action.agents[0]} {' '.join([f'intent-param-{i}' for i in range(intent.arity)])})" ))
+                f"(intends-{intent.identifier} {action.agents[0]} {' '.join([f'{i}-for-intent' for i in intent.parameters])})" ))
 
             # TODO: Delegate preconditions are complex
 
@@ -125,6 +130,46 @@ class HaslumCompilation:
             new_action.effect = effects
             actions.append(new_action)
         return actions
+
+    def get_versions_of_expressioned_action(self, action):
+        expression_indices = [i for i,t in enumerate(action.parameters.types) if t.lower() == "expression"]
+        if len(expression_indices) == 0:
+            return [action]
+        else:
+            versions = []
+            # Enumerate all the things the expression(s) could take
+            possible_expressions = itertools.product(self.domain.predicates, repeat=len(expression_indices))
+
+            for instantiation in possible_expressions:
+                parameters = copy.deepcopy(action.parameters)
+                action_pre_string = action.precondition.to_string().strip("()")
+                action_eff_string = action.effect.to_string().strip("()")
+
+                # For each expression parameter, replace the name/types in parameter list
+                for expr_index, expression_inst in zip(reversed(expression_indices), instantiation):
+                    expression_name = action.parameters.parameters[expr_index]
+                    new_expr_params = [f"{p}-for-{expression_name.strip('? ')}" for p in expression_inst.parameters]
+                    parameters.parameters[expr_index:expr_index+1] = new_expr_params
+                    parameters.types[expr_index:expr_index+1] = expression_inst.types
+
+                    action_pre_string = action_pre_string.replace(expression_name, f"({expression_inst.identifier} {' '.join(new_expr_params)})")
+                    action_eff_string = action_eff_string.replace(expression_name, f"({expression_inst.identifier} {' '.join(new_expr_params)})")
+
+            # TODO new action from blank, not copy
+                new_pre = fluenttree.FluentTree(action_pre_string)
+                new_eff = fluenttree.FluentTree(action_eff_string)
+
+                new_action = Operator.Operator(None)
+                new_action.parameters = parameters
+                new_action.precondition = new_pre
+                new_action.effect = new_eff
+                new_action.name = f"{action.name}-{'-'.join([inst.identifier for inst in instantiation])}"
+
+                versions.append(new_action)
+
+            return versions
+
+
 
 
 """ NOTES:
