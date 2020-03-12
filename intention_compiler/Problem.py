@@ -29,4 +29,24 @@ class Problem(PDDLPart.PDDLPart):
             self.init_state = []
             self.goal = None
 
+    def to_pddl(self):
+        res = ""
 
+        nl = "\n"
+        tab = "\t"
+        res += f"""
+(define (problem {self.name})
+    (:domain {self.dom_name})
+    (:objects
+        {self.objects}
+    )
+    (:init
+        {(nl+tab).join([str(p) for p in self.init_state])}
+    )
+    (:goal
+        {str(self.goal)}
+    )
+)
+
+"""
+        return res
