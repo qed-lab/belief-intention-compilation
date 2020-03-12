@@ -222,7 +222,7 @@ def get_versions_of_expressioned_action(action, predicate_possibilities):
                 action_eff_string = action_eff_string.replace(expression_name, f"({expression_inst.identifier} {' '.join(new_expr_params)})")
                 action_fail_string = action_fail_string.replace(expression_name, f"({expression_inst.identifier} {' '.join(new_expr_params)})")
 
-        # TODO new action from blank, not copy
+
             new_pre = fluenttree.FluentTree(action_pre_string)
             new_eff = fluenttree.FluentTree(action_eff_string)
             new_fail = fluenttree.FluentTree(action_fail_string) if action.fail is not None else None

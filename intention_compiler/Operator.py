@@ -54,7 +54,9 @@ class Operator(PDDLPart.PDDLPart):
     :precondition 
 {self.precondition.to_string(2)}
     :effect
-{self.effect.to_string(2)}
+{self.effect.to_string(2)}    
+{"    :fail" if self.fail is not None else ""}
+{self.fail.to_string(2) if self.fail is not None else ""}
     {":agents (" if len(self.agents) > 0 else ""}{" ".join(self.agents)}{")" if len(self.agents) > 0 else ""}
 )
 """

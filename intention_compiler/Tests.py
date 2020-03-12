@@ -128,6 +128,9 @@ class TestFluentTreeStuff(TestCase):
     :effect       (and (intends ?genie ?objective)
                        (delegated ?character ?objective ?genie)
                        (intends ?lamp ?thought))
+    :fail       (and (intends ?genie ?objective)
+                       (delegated ?character ?objective ?genie)
+                       (intends ?lamp ?thought))
     :agents       (?character))
   )"""
 
