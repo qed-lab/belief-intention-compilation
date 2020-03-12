@@ -16,6 +16,8 @@ class Operator(PDDLPart.PDDLPart):
             self.agents = []
             self.parameters = []
             self.precondition = None
+            self.effect = None
+            self.fail = None
             for token in tokens:
                 title = token.split()[0]
                 if title == ":action":
@@ -41,6 +43,7 @@ class Operator(PDDLPart.PDDLPart):
             self.parameters = fluenttree.AbstractPredicate("")
             self.precondition = None
             self.effect = None
+            self.fail = None
 
     def __str__(self):
         # TODO: Consistentify what is str() and what's .to_string()
@@ -51,7 +54,9 @@ class Operator(PDDLPart.PDDLPart):
     :precondition 
 {self.precondition.to_string(2)}
     :effect
-{self.effect.to_string(2)}
+{self.effect.to_string(2)}    
+{"    :fail" if self.fail is not None else ""}
+{self.fail.to_string(2) if self.fail is not None else ""}
     {":agents (" if len(self.agents) > 0 else ""}{" ".join(self.agents)}{")" if len(self.agents) > 0 else ""}
 )
 """

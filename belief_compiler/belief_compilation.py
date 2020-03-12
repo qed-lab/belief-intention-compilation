@@ -207,8 +207,9 @@ def get_versions_of_expressioned_action(action, predicate_possibilities):
 
         for instantiation in possible_expressions:
             parameters = deepcopy(action.parameters)
-            action_pre_string = action.precondition.to_string().strip("()")
-            action_eff_string = action.effect.to_string().strip("()")
+            action_pre_string = action.precondition.to_string().strip("() ")
+            action_eff_string = action.effect.to_string().strip("() ")
+            action_fail_string = action.fail.to_string().strip("() ") if action.fail is not None else ""
 
             # For each expression parameter, replace the name/types in parameter list
             for expr_index, expression_inst in zip(reversed(expression_indices), instantiation):
@@ -219,16 +220,20 @@ def get_versions_of_expressioned_action(action, predicate_possibilities):
 
                 action_pre_string = action_pre_string.replace(expression_name, f"({expression_inst.identifier} {' '.join(new_expr_params)})")
                 action_eff_string = action_eff_string.replace(expression_name, f"({expression_inst.identifier} {' '.join(new_expr_params)})")
+                action_fail_string = action_fail_string.replace(expression_name, f"({expression_inst.identifier} {' '.join(new_expr_params)})")
 
-        # TODO new action from blank, not copy
+
             new_pre = fluenttree.FluentTree(action_pre_string)
             new_eff = fluenttree.FluentTree(action_eff_string)
+            new_fail = fluenttree.FluentTree(action_fail_string) if action.fail is not None else None
 
             new_action = Operator(None)
             new_action.parameters = parameters
             new_action.precondition = new_pre
             new_action.effect = new_eff
+            new_action.fail = new_fail
             new_action.name = f"{action.name}-{'-'.join([inst.identifier for inst in instantiation])}"
+            new_action.agents = action.agents
 
             versions.append(new_action)
 
