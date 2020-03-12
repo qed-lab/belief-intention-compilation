@@ -36,15 +36,17 @@ class BeliefCompiledProblem():
         self.compiled_domain.predicates = self.find_predicates()
         self.compiled_domain.actions = self.find_actions()
 
-
     def find_actions(self):
         actions = []
         for act in self.compiled_domain.actions:
             if len(act.agents) == 0:
                 actions.append(act)
             else:
-                generate_belief_action(act, "success")
-                generate_belief_action(act, "fail")
+                successful = generate_belief_action(act, "success")
+                failure = generate_belief_action(act, "fail")
+                actions.append(successful)
+                actions.append(failure)
+        return actions
 
 
     def find_predicates(self):
@@ -96,15 +98,21 @@ def generate_belief_action(original_action, suffix):
         prec_not_met_tree.is_leaf = False
         prec_not_met_tree.child_trees.append(deepcopy(original_action.precondition))
         dupe.precondition.child_trees.append(prec_not_met_tree)
-        dupe.effect = convert_effects( original_action.fail, original_action.agents)
+        dupe.effect = convert_effects_minimally(original_action.fail, original_action.agents)
 
     return dupe
 
 
-def make_beleaves(ft, agent):
+def make_beleaves(ft, agent):  # TODO: Make special cases for "for all" and "when" trees
     if ft.is_leaf:
         ft.identifier = "believes_" + ft.identifier
         ft.words.insert(1, agent)
+    elif ft.is_not and len(ft.child_trees) == 1 and ft.child_trees[0].is_leaf:
+        leaf_pred = fluenttree.AbstractPredicate(ft.child_trees[0])
+        ft.identifier = "believes_not_" + leaf_pred.identifier
+        ft.words = [ft.identifier, agent] + leaf_pred.parameters
+        ft.child_trees = []
+        ft.is_leaf = True
     else:
         ft.child_trees = [c for c in ft.child_trees if not c.is_belief]
         for child in ft.child_trees:
@@ -128,6 +136,27 @@ def flatten_beliefs(ft):
             flatten_beliefs(c)
 
 
+def flatten_beliefs_with_not(ft):
+    if ft.is_leaf:
+        return
+    else:
+        new_children = []
+        for c in ft.child_trees:
+            if not c.is_belief:
+                new_children.append(c)
+            else:
+                if len(c.child_trees) > 0 and c.child_trees[0].is_not:
+                    leaf = fluenttree.AbstractPredicate(c.child_trees[0].child_trees[0])
+                    upper = fluenttree.AbstractPredicate(c)
+                    new_child = fluenttree.FluentTree("believes_not_" + leaf.identifier + ' ' + ' '.join([upper.parameters[0]] + leaf.parameters), depth=c.depth)
+                else:
+                    c_predicate_form = fluenttree.AbstractPredicate(c)
+                    new_child = fluenttree.FluentTree("believes_" + c_predicate_form.identifier + ' ' + ' '.join(c_predicate_form.parameters), depth=c.depth)
+                new_children.append(new_child)
+        ft.child_trees = new_children
+        for c in ft.child_trees:
+            flatten_beliefs_with_not(c)
+
 
 def convert_effects(ft, agent_list):
     res = fluenttree.FluentTree("and ")
@@ -142,6 +171,29 @@ def convert_effects(ft, agent_list):
     res.child_trees += believe_effect_sets
     res.child_trees.append(flattened_effects)
     return res
+
+
+def convert_effects_minimally(ft, agent_list):
+    copied = deepcopy(ft)
+    flatten_beliefs_with_not(copied)
+    return copied
+
+
+def simplify_formula(ft):
+    if ft.is_leaf:
+        return
+    else:
+        if ft.identifier == 'and':
+            new_children = []
+            for c in ft.child_trees:
+                if c.identifier == 'and':
+                    new_children += c.child_trees
+                else:
+                    new_children.append(c)
+            ft.child_trees = new_children
+        for c in ft.child_trees:
+            simplify_formula(c)
+
 
 
 if __name__ == '__main__':
