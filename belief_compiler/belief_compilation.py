@@ -100,6 +100,7 @@ def generate_belief_action(original_action, suffix):
         dupe.precondition.child_trees.append(prec_not_met_tree)
         dupe.effect = convert_effects_minimally(original_action.fail, original_action.agents)
 
+    flatten_beliefs_with_not(dupe.precondition)
     simplify_formula(dupe.precondition)
     return dupe
 
@@ -115,9 +116,16 @@ def make_beleaves(ft, agent):  # TODO: Make special cases for "for all" and "whe
         ft.child_trees = []
         ft.is_leaf = True
     else:
-        ft.child_trees = [c for c in ft.child_trees if not c.is_belief]
+        # non_belief_children = [c for c in ft.child_trees if not c.is_belief]
         for child in ft.child_trees:
-            make_beleaves(child, agent)
+            if child.is_belief:
+                flatten_beliefs_with_not(child)
+            else:
+                make_beleaves(child, agent)
+        # belief_children = [c for c in ft.child_trees if c.is_belief]
+        # for child in belief_children:
+        #     flatten_beliefs_with_not(child)
+        # ft.child_trees = non_belief_children + belief_children
 
 
 def flatten_beliefs(ft):
@@ -189,13 +197,13 @@ def simplify_formula(ft):
         for c in ft.child_trees:
             simplify_formula(c)
         if ft.identifier == 'and':
-            new_children = []
+            new_children = set()
             for c in ft.child_trees:
                 if c.identifier == 'and':
-                    new_children += c.child_trees
+                    new_children |= set(c.child_trees)
                 else:
-                    new_children.append(c)
-            ft.child_trees = new_children
+                    new_children.add(c)
+            ft.child_trees = list(new_children)
 
 
 def get_versions_of_expressioned_action(action, predicate_possibilities):
