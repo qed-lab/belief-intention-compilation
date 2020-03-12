@@ -216,6 +216,16 @@ class FluentTree(PDDLPart.PDDLPart):
             res += "\n" + "\t"*(depth+pad) + ")"
             return res
 
+    def __eq__(self, other):
+        if isinstance(other, self.__class__):
+            return self.to_string() == other.to_string()
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    def __hash__(self):
+        return self.to_string().__hash__()
+
     def leaves(self):
         if self.is_leaf:
             return [self]
@@ -267,7 +277,7 @@ def first_word(s):
     return ""
 
 
-def all_words(s):
+def all_words(s): #TODO: Case: (delegate ?x (intent ?z) ?y)
     tokens = re.split(r"\s", s.split("(")[0])
     words = []
     for token in tokens:

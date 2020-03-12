@@ -146,7 +146,19 @@ def flatten_beliefs(ft):
 
 
 def flatten_beliefs_with_not(ft):
-    if ft.is_leaf:
+    if ft.is_belief:
+        if len(ft.child_trees) > 0 and ft.child_trees[0].is_not:
+            leaf = fluenttree.AbstractPredicate(ft.child_trees[0].child_trees[0])
+            upper = fluenttree.AbstractPredicate(ft)
+            ft.identifier = 'believes_not_' + leaf.identifier
+            ft.words = [ft.identifier] + [upper.parameters[0]] + leaf.parameters
+        else:
+            ft_pred = fluenttree.AbstractPredicate(ft)
+            ft.identifier = "believes_" + ft_pred.identifier
+            ft.words = [ft.identifier] + ft_pred.parameters
+        ft.is_belief = False
+        ft.child_trees = []
+    elif ft.is_leaf:
         return
     else:
         new_children = []
