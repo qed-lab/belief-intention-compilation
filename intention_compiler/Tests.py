@@ -116,6 +116,19 @@ class TestFluentTreeStuff(TestCase):
     :effect       (and (intends ?genie ?objective)
                        (delegated ?character ?objective ?genie))
     :agents       (?character))
+  (:action commplexand
+    :parameters   (?character - character ?thought - expression ?genie - genie ?lamp - magic-lamp ?objective - expression)
+    :precondition (and (not (= ?character ?genie))
+                       (alive ?character)
+                       (has ?character ?lamp)
+                       (intends ?genie ?thought)
+                       (believes ?character ?objective)
+                       (controls ?character ?genie)
+                       (alive ?genie))
+    :effect       (and (intends ?genie ?objective)
+                       (delegated ?character ?objective ?genie)
+                       (intends ?lamp ?thought))
+    :agents       (?character))
   )"""
 
         prob_str = """define (problem aladdin-cave)
@@ -139,7 +152,7 @@ class TestFluentTreeStuff(TestCase):
 
         comp = HaslumCompilation(dom, prob)
 
-        versions = comp.get_versions_of_expressioned_action(dom.actions[0])
+        versions = comp.get_versions_of_expressioned_action(dom.actions[1])
         for v in versions:
             print(v)
 

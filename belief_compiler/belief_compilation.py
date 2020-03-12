@@ -207,8 +207,8 @@ def get_versions_of_expressioned_action(action, predicate_possibilities):
 
         for instantiation in possible_expressions:
             parameters = deepcopy(action.parameters)
-            action_pre_string = action.precondition.to_string().strip("()")
-            action_eff_string = action.effect.to_string().strip("()")
+            action_pre_string = action.precondition.to_string().strip("() ")
+            action_eff_string = action.effect.to_string().strip("() ")
 
             # For each expression parameter, replace the name/types in parameter list
             for expr_index, expression_inst in zip(reversed(expression_indices), instantiation):
@@ -229,6 +229,7 @@ def get_versions_of_expressioned_action(action, predicate_possibilities):
             new_action.precondition = new_pre
             new_action.effect = new_eff
             new_action.name = f"{action.name}-{'-'.join([inst.identifier for inst in instantiation])}"
+            new_action.agents = action.agents
 
             versions.append(new_action)
 
