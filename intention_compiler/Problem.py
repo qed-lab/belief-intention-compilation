@@ -44,7 +44,7 @@ class Problem(PDDLPart.PDDLPart):
         {(nl+tab).join([str(p) for p in self.init_state])}
     )
     (:goal
-        {str(self.goal)}
+{self.goal.to_string(2)}
     )
 )
 

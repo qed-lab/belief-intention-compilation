@@ -40,13 +40,14 @@ class BeliefCompiledProblem:
     def find_actions(self):
         actions = []
         for act in self.base_domain.actions:
-            if len(act.agents) == 0:
-                actions.append(act)
-            else:
-                successful = generate_belief_action(act, "success")
-                failure = generate_belief_action(act, "fail")
-                actions.append(successful)
-                actions.append(failure)
+            for grounded_act in get_versions_of_expressioned_action(act, self.base_domain.predicates):
+                if len(grounded_act.agents) == 0:
+                    actions.append(grounded_act)
+                else:
+                    successful = generate_belief_action(grounded_act, "success")
+                    failure = generate_belief_action(grounded_act, "fail")
+                    actions.append(successful)
+                    actions.append(failure)
         return actions
 
     def find_predicates(self):
@@ -196,7 +197,14 @@ def simplify_formula(ft):
                     new_children.append(c)
             ft.child_trees = new_children
 
+
 def get_versions_of_expressioned_action(action, predicate_possibilities):
+    """
+
+    :param action: Operator object
+    :param predicate_possibilities: List of abstract predicates to ground expression
+    :return: List of Operators with no expression parameters.
+    """
     expression_indices = [i for i,t in enumerate(action.parameters.types) if t.lower() == "expression"]
     if len(expression_indices) == 0:
         return [action]
@@ -256,6 +264,6 @@ if __name__ == '__main__':
     comp_prob = bcp.compiled_problem.to_pddl()
     # comp_prob = bcp.compiled_problem.to_pddl()
     print(comp_dom)
-    Utils.send_to_file(r'../samples/compiled/rooms-domain_bompiled.pddl', comp_dom)
+    # Utils.send_to_file(r'../samples/compiled/rooms-domain_bompiled.pddl', comp_dom)
 
 
