@@ -134,6 +134,9 @@ class AbstractPredicate:
         res = f"({res})"
         return res
 
+    def typed_string(self):
+        return " ".join([p + " - " + t for p,t in zip(self.parameters, self.types)])
+
 
     # def __eq__(self, other):
     #     if isinstance(other, self.__class__):
@@ -202,15 +205,15 @@ class FluentTree(PDDLPart.PDDLPart):
     #             res += "\n" + child.to_string()
     #         return res
 
-    def to_string(self, pad=0):
-        if self.is_leaf:
-            return "\t"*(self.depth+pad) + "(" + self.identifier + ' ' + " ".join(self.words[1:]) + ")"
+    def to_string(self, pad=0, depth=0):
+        if self.is_leaf and not (self.is_belief or self.is_intends):
+            return "\t"*(depth+pad) + "(" + self.identifier + ' ' + " ".join(self.words[1:]) + ")"
         else:
-            res = "\t"*(self.depth+pad) + "(" + self.identifier + ' ' + " ".join(self.words[1:]) + ' '
+            res = "\t"*(depth+pad) + "(" + self.identifier + ' ' + " ".join(self.words[1:]) + ' '
             # self.string[:self.string.find('(')].strip()  # TODO: Why the find '('?
             for child in self.child_trees:
-                res += "\n" + child.to_string(pad)
-            res += "\n" + "\t"*(self.depth+pad) + ")"
+                res += "\n" + child.to_string(pad, depth+1)
+            res += "\n" + "\t"*(depth+pad) + ")"
             return res
 
     def leaves(self):

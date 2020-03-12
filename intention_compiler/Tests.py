@@ -1,7 +1,9 @@
 from unittest import TestCase
 import copy
 from fluenttree import FluentTree
-from fluenttree import AbstractPredicate
+from Domain import Domain
+from Problem import Problem
+from compilation import HaslumCompilation
 
 class TestFluentTreeStuff(TestCase):
 
@@ -79,4 +81,65 @@ class TestFluentTreeStuff(TestCase):
         for pred in dem_preds:
             print(pred.__str__())
             print(pred.__repr__())
+
+    def testGet_version_of_expressioned_action(self):
+
+        dom_str = """define (domain aladdin)
+  (:requirements :adl :domain-axioms :expression-variables :intentionality :delegation)
+  (:types character thing place - object
+          male female monster - character
+          knight king - male
+          genie dragon - monster
+          magic-lamp - thing)
+  (:predicates (alive ?character - character)
+               (scary ?monster - monster)
+               (beautiful ?character - character)
+               (confined ?character - character)
+               (single ?character - character)
+               (married ?character - character)
+               (at ?character - character ?place - place)
+               (in ?genie - genie ?magic-lamp - magic-lamp)
+               (has ?character - character ?thing - thing)
+               (loyal-to ?knight - knight ?king - king)
+               (controls ?character - character ?genie - genie)
+               (loves ?lover - character ?love-interest - character)
+               (married-to ?character1 - character ?character2 - character))
+
+  ;; A character delegates a goal to a genie.
+  (:action command
+    :parameters   (?character - character ?genie - genie ?lamp - magic-lamp ?objective - expression)
+    :precondition (and (not (= ?character ?genie))
+                       (alive ?character)
+                       (has ?character ?lamp)
+                       (controls ?character ?genie)
+                       (alive ?genie))
+    :effect       (and (intends ?genie ?objective)
+                       (delegated ?character ?objective ?genie))
+    :agents       (?character))
+  )"""
+
+        prob_str = """define (problem aladdin-cave)
+  (:domain aladdin)
+  (:objects hero - knight
+            king - king
+            jasmine - female
+            dragon - dragon
+            genie - genie
+            castle mountain - place
+            lamp - magic-lamp)
+  (:init (alive hero) (single hero) (at hero castle) (loyal-to hero king)
+         (alive king) (single king) (at king castle)
+         (alive jasmine) (beautiful jasmine) (single jasmine) (at jasmine castle) 
+         (alive dragon) (scary dragon) (at dragon mountain) (has dragon lamp)
+         (alive genie) (scary genie) (confined genie) (in genie lamp))
+  (:goal (and (not (alive genie))
+              (married-to king jasmine)))"""
+        dom = Domain(dom_str)
+        prob = Problem(prob_str)
+
+        comp = HaslumCompilation(dom, prob)
+
+        versions = comp.get_versions_of_expressioned_action(dom.actions[0])
+        for v in versions:
+            print(v)
 
