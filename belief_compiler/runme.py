@@ -34,6 +34,11 @@ def flatten_beliefs_2(ft):
             flatten_beliefs_2(c)
 
 
+dom = """
+
+"""
+
+
 if __name__ == '__main__':
     test_s = """
     and 

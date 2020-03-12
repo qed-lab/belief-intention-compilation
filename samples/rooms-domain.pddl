@@ -144,7 +144,7 @@
             (and
                 (not (locked ?room))
             )
-        fail:
+        :fail
             (when (and (locked ?room) (has ?character ?key) (not (unlocked-by ?room ?key)))
                 (believes ?character (not (unlocked-by ?room ?key)))
             )

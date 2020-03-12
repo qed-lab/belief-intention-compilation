@@ -5,9 +5,9 @@ import itertools
 import Problem
 from Operator import Operator
 from copy import deepcopy
-import parsee
 
-class BeliefCompiledProblem():
+
+class BeliefCompiledProblem:
     def __init__(self, domain, problem):
         self.base_domain = domain
         self.base_problem = problem
@@ -39,7 +39,7 @@ class BeliefCompiledProblem():
 
     def find_actions(self):
         actions = []
-        for act in self.compiled_domain.actions:
+        for act in self.base_domain.actions:
             if len(act.agents) == 0:
                 actions.append(act)
             else:
@@ -48,7 +48,6 @@ class BeliefCompiledProblem():
                 actions.append(successful)
                 actions.append(failure)
         return actions
-
 
     def find_predicates(self):
         base_preds = self.base_domain.predicates
@@ -61,7 +60,7 @@ class BeliefCompiledProblem():
         state = []
         for pred in [fluenttree.AbstractPredicate(c) for c in self.base_problem.init_state]:
             if pred.is_belief:
-                pred = fluenttree.AbstractPredicate(f"believes-{pred.identifier} {' '.join(pred.parameters)}")
+                pred = fluenttree.AbstractPredicate(f"believes_{pred.identifier} {' '.join(pred.parameters)}")
             state.append(pred)
 
 
@@ -174,6 +173,7 @@ def convert_effects(ft, agent_list):
     return res
 
 
+# TODO: Agent_list isn't necessary for this compilation, but it may be necessary for more involved microtheories
 def convert_effects_minimally(ft, agent_list):
     copied = deepcopy(ft)
     flatten_beliefs_with_not(copied)
@@ -247,6 +247,10 @@ if __name__ == '__main__':
     dom = Domain.Domain(dom_child)
 
     bcp = BeliefCompiledProblem(dom, prob)
-    print([str(x) for x in bcp.compiled_domain.predicates])
+    comp_dom = bcp.compiled_domain.to_pddl()
+    comp_prob = bcp.compiled_problem.to_pddl()
+    # comp_prob = bcp.compiled_problem.to_pddl()
+    print(comp_dom)
+    Utils.send_to_file(r'../samples/compiled/rooms-domain_bompiled.pddl', comp_dom)
 
 

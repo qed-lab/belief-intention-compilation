@@ -228,7 +228,7 @@ class FluentTree(PDDLPart.PDDLPart):
     def leaves_including_not(self):
         if self.is_leaf:
             return [self]
-        if self.is_not and len(self.child_trees)==1 and self.child_trees[0].is_leaf:
+        if self.is_not and len(self.child_trees) == 1 and self.child_trees[0].is_leaf:
             return [self]
         else:
             leaves = list()
@@ -258,14 +258,14 @@ class FluentTree(PDDLPart.PDDLPart):
         return result
 
 
-
-#TODO: Why does this have a foreach loop?
+# TODO: Why does this have a foreach loop?
 def first_word(s):
     tokens = re.split(r"\s", s)
     for token in tokens:
         if len(token) > 0:
             return token
     return ""
+
 
 def all_words(s):
     tokens = re.split(r"\s", s.split("(")[0])

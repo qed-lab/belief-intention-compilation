@@ -56,3 +56,6 @@ def get_trimmed_string_from_file(file):
     return res
 
 
+def send_to_file(file, string):
+    with open(file, 'w') as f_writer:
+        f_writer.write(string)
