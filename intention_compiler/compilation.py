@@ -153,9 +153,13 @@ class HaslumCompilation:
                     parameters.parameters[expr_index:expr_index + 1] = new_expr_params
                     parameters.types[expr_index:expr_index + 1] = expression_inst.types
 
+
                     action_pre_string = action_pre_string.replace(" " + expression_name + " ",f" ({expression_inst.identifier} {' '.join(new_expr_params)}) ")
                     action_eff_string = action_eff_string.replace(" " + expression_name + " ",f" ({expression_inst.identifier} {' '.join(new_expr_params)}) ")
                     action_fail_string = action_fail_string.replace(" " + expression_name + " ",f" ({expression_inst.identifier} {' '.join(new_expr_params)}) ")
+                    action_pre_string = action_pre_string.replace(expression_name + ")",f"({expression_inst.identifier} {' '.join(new_expr_params)}) )")
+                    action_eff_string = action_eff_string.replace(expression_name + ")",f"({expression_inst.identifier} {' '.join(new_expr_params)}) )")
+                    action_fail_string = action_fail_string.replace(expression_name + ")",f"({expression_inst.identifier} {' '.join(new_expr_params)}) )")
 
 
                 new_pre = fluenttree.FluentTree(action_pre_string)
