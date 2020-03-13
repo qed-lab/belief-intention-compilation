@@ -1,6 +1,6 @@
 from fluenttree import FluentTree, AbstractPredicate
 import copy
-from belief_compilation import generate_belief_action
+from belief_compilation import generate_belief_action, simplify_formula
 from Operator import  Operator
 
 def modify_leaves(ft):
@@ -34,6 +34,11 @@ def flatten_beliefs_2(ft):
             flatten_beliefs_2(c)
 
 
+dom = """
+
+"""
+
+
 if __name__ == '__main__':
     test_s = """
     and 
@@ -45,6 +50,19 @@ if __name__ == '__main__':
         (p7 ?x)
         (p7 ?z)
         (not (intends ?a (not (p8 ?x ?y z))))
+    """
+
+    test_degenerate = """
+    and ( and ( and (not (h 2)) (h 3)
+            ) 
+            ( and (h 1) (h 4)
+            )
+        )
+        (   and ( and (h 5) (h 6)
+            ) 
+            ( and (h 7) (h 8)
+        )
+    )
     """
 
     action_s = """
@@ -71,6 +89,9 @@ if __name__ == '__main__':
 
     ft = FluentTree(test_s)
     op = Operator(action_s)
+    deg = FluentTree(test_degenerate)
+    simplify_formula(deg)
+    print(deg.to_string())
     succ = generate_belief_action(op, "success")
     fail = generate_belief_action(op, "fail")
 

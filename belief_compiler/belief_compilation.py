@@ -5,9 +5,9 @@ import itertools
 import Problem
 from Operator import Operator
 from copy import deepcopy
-import parsee
 
-class BeliefCompiledProblem():
+
+class BeliefCompiledProblem:
     def __init__(self, domain, problem):
         self.base_domain = domain
         self.base_problem = problem
@@ -39,16 +39,16 @@ class BeliefCompiledProblem():
 
     def find_actions(self):
         actions = []
-        for act in self.compiled_domain.actions:
-            if len(act.agents) == 0:
-                actions.append(act)
-            else:
-                successful = generate_belief_action(act, "success")
-                failure = generate_belief_action(act, "fail")
-                actions.append(successful)
-                actions.append(failure)
+        for act in self.base_domain.actions:
+            for grounded_act in get_versions_of_expressioned_action(act, self.base_domain.predicates):
+                if len(grounded_act.agents) == 0:
+                    actions.append(grounded_act)
+                else:
+                    successful = generate_belief_action(grounded_act, "success")
+                    failure = generate_belief_action(grounded_act, "fail")
+                    actions.append(successful)
+                    actions.append(failure)
         return actions
-
 
     def find_predicates(self):
         base_preds = self.base_domain.predicates
@@ -61,7 +61,7 @@ class BeliefCompiledProblem():
         state = []
         for pred in [fluenttree.AbstractPredicate(c) for c in self.base_problem.init_state]:
             if pred.is_belief:
-                pred = fluenttree.AbstractPredicate(f"believes-{pred.identifier} {' '.join(pred.parameters)}")
+                pred = fluenttree.AbstractPredicate(f"believes_{pred.identifier} {' '.join(pred.parameters)}")
             state.append(pred)
 
 
@@ -92,8 +92,7 @@ def generate_belief_action(original_action, suffix):
 
     if suffix == "success":
         dupe.precondition.child_trees.append(deepcopy(original_action.precondition))
-        dupe.effect = convert_effects( original_action.effect, original_action.agents)
-
+        dupe.effect = convert_effects_minimally(original_action.effect, original_action.agents)
     elif suffix == "fail":
         prec_not_met_tree = fluenttree.FluentTree("not ")
         prec_not_met_tree.is_leaf = False
@@ -101,6 +100,8 @@ def generate_belief_action(original_action, suffix):
         dupe.precondition.child_trees.append(prec_not_met_tree)
         dupe.effect = convert_effects_minimally(original_action.fail, original_action.agents)
 
+    flatten_beliefs_with_not(dupe.precondition)
+    simplify_formula(dupe.precondition)
     return dupe
 
 
@@ -115,9 +116,16 @@ def make_beleaves(ft, agent):  # TODO: Make special cases for "for all" and "whe
         ft.child_trees = []
         ft.is_leaf = True
     else:
-        ft.child_trees = [c for c in ft.child_trees if not c.is_belief]
+        # non_belief_children = [c for c in ft.child_trees if not c.is_belief]
         for child in ft.child_trees:
-            make_beleaves(child, agent)
+            if child.is_belief:
+                flatten_beliefs_with_not(child)
+            else:
+                make_beleaves(child, agent)
+        # belief_children = [c for c in ft.child_trees if c.is_belief]
+        # for child in belief_children:
+        #     flatten_beliefs_with_not(child)
+        # ft.child_trees = non_belief_children + belief_children
 
 
 def flatten_beliefs(ft):
@@ -138,7 +146,19 @@ def flatten_beliefs(ft):
 
 
 def flatten_beliefs_with_not(ft):
-    if ft.is_leaf:
+    if ft.is_belief:
+        if len(ft.child_trees) > 0 and ft.child_trees[0].is_not:
+            leaf = fluenttree.AbstractPredicate(ft.child_trees[0].child_trees[0])
+            upper = fluenttree.AbstractPredicate(ft)
+            ft.identifier = 'believes_not_' + leaf.identifier
+            ft.words = [ft.identifier] + [upper.parameters[0]] + leaf.parameters
+        else:
+            ft_pred = fluenttree.AbstractPredicate(ft)
+            ft.identifier = "believes_" + ft_pred.identifier
+            ft.words = [ft.identifier] + ft_pred.parameters
+        ft.is_belief = False
+        ft.child_trees = []
+    elif ft.is_leaf:
         return
     else:
         new_children = []
@@ -174,29 +194,37 @@ def convert_effects(ft, agent_list):
     return res
 
 
+# TODO: Agent_list isn't necessary for this compilation, but it may be necessary for more involved microtheories
 def convert_effects_minimally(ft, agent_list):
     copied = deepcopy(ft)
     flatten_beliefs_with_not(copied)
     return copied
 
 
+# TODO: If planners don't like (not (and ...)) formulae, then I'll need to add DeMorgan's here
 def simplify_formula(ft):
     if ft.is_leaf:
         return
     else:
-        if ft.identifier == 'and':
-            new_children = []
-            for c in ft.child_trees:
-                if c.identifier == 'and':
-                    new_children += c.child_trees
-                else:
-                    new_children.append(c)
-            ft.child_trees = new_children
         for c in ft.child_trees:
             simplify_formula(c)
+        if ft.identifier == 'and':
+            new_children = set()
+            for c in ft.child_trees:
+                if c.identifier == 'and':
+                    new_children |= set(c.child_trees)
+                else:
+                    new_children.add(c)
+            ft.child_trees = list(new_children)
 
 
 def get_versions_of_expressioned_action(action, predicate_possibilities):
+    """
+
+    :param action: Operator object
+    :param predicate_possibilities: List of abstract predicates to ground expression
+    :return: List of Operators with no expression parameters.
+    """
     expression_indices = [i for i,t in enumerate(action.parameters.types) if t.lower() == "expression"]
     if len(expression_indices) == 0:
         return [action]
@@ -254,6 +282,10 @@ if __name__ == '__main__':
     dom = Domain.Domain(dom_child)
 
     bcp = BeliefCompiledProblem(dom, prob)
-    print([str(x) for x in bcp.compiled_domain.predicates])
+    comp_dom = bcp.compiled_domain.to_pddl()
+    comp_prob = bcp.compiled_problem.to_pddl()
+    # comp_prob = bcp.compiled_problem.to_pddl()
+    print(comp_dom)
+    # Utils.send_to_file(r'../samples/compiled/rooms-domain_bompiled.pddl', comp_dom)
 
 
