@@ -1,6 +1,6 @@
 from fluenttree import FluentTree, AbstractPredicate
 import copy
-from belief_compilation import generate_belief_action, simplify_formula
+from belief_compilation import generate_belief_action, simplify_formula, super_simplify_formula
 from Operator import  Operator
 
 def modify_leaves(ft):
@@ -39,7 +39,98 @@ dom = """
 """
 
 
+def test_super_flat():
+
+    test_1 = """
+    not 
+        (and 
+            (f1 ?x ?y) 
+            (not 
+                (f2 ?x ?y)
+            ) 
+            (and 
+                (f3) 
+                (f4)
+            ) 
+            (or 
+                (f5) 
+                (not (f6))
+            )
+        )
+    """
+
+    test_2 = """
+    and
+        (not 
+            (not 
+                (not 
+                    (not 
+                        (f1)
+                    )
+                )
+            )
+        )
+        (not 
+            (not 
+                (not 
+                    (not 
+                        (not 
+                            (f2)
+                        )
+                    )
+                )
+            )
+        )
+        """
+
+    test_3 = """
+    and 
+        (and 
+            (f1) 
+            (f2) 
+        ) 
+        (not 
+            (not 
+                (or 
+                    (f3) 
+                    (f4) 
+                ) 
+            ) 
+        )"""
+
+    test_4 = """
+    and 
+        (f1)
+        (f2)
+        (not 
+            (and 
+                (or 
+                    (f3) 
+                    (f4) 
+                )
+            ) 
+        )"""
+
+
+    # ft = FluentTree(test_1)
+    # ft = FluentTree(test_2)
+    # ft = FluentTree(test_3)
+    ft = FluentTree(test_4)
+    new_ft = super_simplify_formula(ft)
+    print(ft.to_string())
+    print(new_ft.to_string())
+
+
+    # print(new_ft.to_string())
+
+
+
 if __name__ == '__main__':
+
+    test_super_flat()
+
+    exit(0)
+
     test_s = """
     and 
         (not (p1 ?x ?y ?z))
@@ -108,3 +199,4 @@ if __name__ == '__main__':
 
     print("FT:\n", ft.to_string(), "FT2\n", ft_clone.to_string())
     print("---\n\n", op_clone.to_string())
+

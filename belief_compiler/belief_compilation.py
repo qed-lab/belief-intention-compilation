@@ -201,6 +201,7 @@ def convert_effects_minimally(ft, agent_list):
     return copied
 
 
+# TODO: Demorgan out not(and(...) so that when we beleaf it's correct
 # TODO: If planners don't like (not (and ...)) formulae, then I'll need to add DeMorgan's here
 def simplify_formula(ft):
     if ft.is_leaf:
@@ -216,6 +217,112 @@ def simplify_formula(ft):
                 else:
                     new_children.add(c)
             ft.child_trees = list(new_children)
+
+
+
+# This time to remove all not(and(...)) / not(or(...)) nonsense
+def super_simplify_formula(ft, negated=False):
+    ft = deepcopy(ft)
+
+    if negated:
+        # if ft.is_not and ft.child_trees[0].is_leaf:
+        #     return ft.child_trees[0]
+
+        # Let nots cancel out
+        if ft.is_not:
+            ft = super_simplify_formula(ft.child_trees[0], False)
+            return cleanup(ft)
+
+
+        if ft.is_leaf:
+            # return ft
+            new_not = fluenttree.FluentTree("not (x)")
+            new_not.child_trees = [ft]
+            return new_not
+
+        # DeMorgans laws
+        elif ft.identifier == "and":
+            ft.identifier = "or"
+            new_kids = []
+            for c in ft.child_trees:
+                new_kids.append(super_simplify_formula(c, True))
+            ft.child_trees = new_kids
+        elif ft.identifier == "or":
+            ft.identifier = "and"
+            new_kids = []
+            for c in ft.child_trees:
+                new_kids.append(super_simplify_formula(c, True))
+            ft.child_trees = new_kids
+
+    else:
+        if ft.is_leaf:
+            return ft
+        if ft.is_not:
+            ft = super_simplify_formula(ft.child_trees[0], True)
+            return cleanup(ft)
+
+        else:
+            new_kids = []
+            for c in ft.child_trees:
+                new_kids.append(super_simplify_formula(c, False))
+            ft.child_trees = new_kids
+
+    return cleanup(ft)
+
+def cleanup(ft):
+    # CLEAN UP ON THE WAY UP
+
+
+
+    # and(and(...)) -> and(...)
+    if ft.identifier == 'and':
+        new_children = []
+        for c in ft.child_trees:
+            if c.identifier == 'and':
+                new_children.extend(c.child_trees)
+            else:
+                new_children.append(c)
+        ft.child_trees = list(new_children)
+
+        if len(ft.child_trees) == 1:
+            ft = ft.child_trees[0]
+
+    # or(or(...)) -> or(...)
+    if ft.identifier == 'or':
+        new_children = []
+        for c in ft.child_trees:
+            if c.identifier == 'or':
+                new_children.extend(c.child_trees)
+            else:
+                new_children.append(c)
+        ft.child_trees = new_children
+
+        if len(ft.child_trees) == 1:
+            ft = ft.child_trees[0]
+
+    # and( not(not(f)), ...) -> and( f, ...)
+    new_children = []
+    for c in ft.child_trees:
+        if c.is_not and c.child_trees[0].is_not:
+            new_children.append(c.child_trees[0].child_trees[0])
+        else:
+            new_children.append(c)
+    ft.child_trees = new_children
+
+    return ft
+
+    # Blanket remove nots
+    # for c in ft.child_trees:
+    #     new_children = set()
+    #     if not c.is_leaf and c.is_not:
+    #         new_children.add(c.child_trees[0])
+    #     else:
+    #         new_children.add(c)
+
+
+
+
+
 
 
 def get_versions_of_expressioned_action(action, predicate_possibilities):
