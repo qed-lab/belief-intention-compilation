@@ -1,7 +1,7 @@
-from fluenttree import FluentTree, AbstractPredicate
+from pddl.fluenttree import FluentTree, AbstractPredicate
 import copy
 from belief_compilation import generate_belief_action, simplify_formula, super_simplify_formula
-from Operator import  Operator
+from pddl.Operator import  Operator
 
 def modify_leaves(ft):
     if ft.is_leaf:

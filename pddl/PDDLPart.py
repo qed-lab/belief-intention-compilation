@@ -1,4 +1,4 @@
-import Utils
+from pddl import Utils
 
 
 class PDDLPart:

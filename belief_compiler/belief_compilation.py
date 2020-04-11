@@ -1,9 +1,6 @@
-import Domain
-import fluenttree
-import Utils
 import itertools
-import Problem
-from Operator import Operator
+from pddl import Problem, Utils, Domain, fluenttree
+from pddl.Operator import Operator
 from copy import deepcopy
 
 

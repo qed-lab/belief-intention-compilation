@@ -1,6 +1,3 @@
-import PDDLPart
-
-
 class Parameter:
     def __init__(self, param_string):
         self.string = param_string

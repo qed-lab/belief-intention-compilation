@@ -1,4 +1,4 @@
-import PDDLPart
+from pddl import PDDLPart
 import re
 
 

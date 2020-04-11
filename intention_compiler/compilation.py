@@ -1,8 +1,5 @@
-import Domain
-import Problem
+from pddl import Domain, fluenttree, Operator
 import copy
-import Operator
-import fluenttree
 import itertools
 
 

@@ -1,8 +1,5 @@
-import PDDLPart
-import Operator
 import re
-import Utils
-import fluenttree
+from pddl import Utils, PDDLPart, fluenttree, Operator
 
 
 class Domain(PDDLPart.PDDLPart):

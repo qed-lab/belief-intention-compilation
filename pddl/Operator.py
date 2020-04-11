@@ -1,8 +1,5 @@
-import PDDLPart
-import Parameter
-import fluenttree
 import re
-import Utils
+from pddl import Utils, PDDLPart, fluenttree
 
 
 class Operator(PDDLPart.PDDLPart):

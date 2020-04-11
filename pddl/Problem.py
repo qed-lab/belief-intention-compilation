@@ -1,6 +1,4 @@
-import fluenttree
-import PDDLPart
-import Utils
+from pddl import Utils, PDDLPart, fluenttree
 import re
 
 

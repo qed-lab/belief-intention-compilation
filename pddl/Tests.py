@@ -1,8 +1,8 @@
 from unittest import TestCase
 import copy
-from fluenttree import FluentTree
-from Domain import Domain
-from Problem import Problem
+from pddl.fluenttree import FluentTree
+from pddl.Domain import Domain
+from pddl.Problem import Problem
 from compilation import HaslumCompilation
 
 class TestFluentTreeStuff(TestCase):

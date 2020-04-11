@@ -1,8 +1,5 @@
 import argparse
-import PDDLPart
-import Utils
-import Domain
-import Problem
+from pddl import Problem, Utils, Domain
 from compilation import HaslumCompilation
 
 
