@@ -54,6 +54,7 @@ if __name__ == '__main__':
     os.system(cmd + DEVNULL)
     time = TIMER.time() - start_time
 
+    print(f"Glaive took {time:5.5f} seconds")
     # Decompile solved plan
 
     with open(args.glaive_plan, 'r') as glaive_plan_in:

@@ -6,7 +6,8 @@
 (define (domain rooms)
     (:requirements :adl :universal-preconditions :expression-variables :intentionality :belief)
     (:types
-        letter key star - thing
+        ;;;letter
+        key star - thing
         character room thing
     )
     (:predicates

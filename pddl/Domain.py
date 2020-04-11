@@ -48,7 +48,7 @@ class Domain(PDDLPart.PDDLPart):
     (:predicates
         {(nl+tab+tab).join([str(p) for p in self.predicates])}
     )
-    {(nl+tab).join([str(x) for x in self.actions])}
+    {(nl+tab).join([str(x) for x in self.actions if x.effect.identifier != ""])}
 )
 
 """

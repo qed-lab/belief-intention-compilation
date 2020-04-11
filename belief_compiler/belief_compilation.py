@@ -14,7 +14,7 @@ class BeliefCompiledProblem:
 
         # Compiling Problem
         self.compiled_problem.init_state = self.find_init_state()
-        self.compiled_problem.goal = self.base_problem.goal   # TODO: Flatten belief in goal? Can belief even be a goal?
+        self.compiled_problem.goal = super_simplify_formula(self.base_problem.goal)   # TODO: Flatten belief in goal? Can belief even be a goal?
         self.compiled_problem.name = self.base_problem.name + '-bompiled'
         self.compiled_problem.dom_name = self.base_problem.dom_name + '-bompiled'
         self.compiled_problem.objects = self.base_problem.objects
@@ -101,6 +101,10 @@ def generate_belief_action(original_action, suffix):
     dupe.precondition = super_simplify_formula(dupe.precondition)
     flatten_beliefs_with_not(dupe.precondition)
     dupe.precondition = super_simplify_formula(dupe.precondition)
+
+    dupe.effect = super_simplify_formula(dupe.effect)
+    flatten_beliefs_with_not(dupe.effect)
+    dupe.effect = super_simplify_formula(dupe.effect)
     # simplify_formula(dupe.precondition)
     return dupe
 

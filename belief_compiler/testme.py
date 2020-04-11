@@ -111,11 +111,18 @@ def test_super_flat():
             ) 
         )"""
 
+    test_5 = """
+    and  
+        (not  
+            (locked ?room)
+        )
+	"""
 
     # ft = FluentTree(test_1)
     # ft = FluentTree(test_2)
     # ft = FluentTree(test_3)
-    ft = FluentTree(test_4)
+    # ft = FluentTree(test_4)
+    ft = FluentTree(test_5)
     new_ft = super_simplify_formula(ft)
     print(ft.to_string())
     print(new_ft.to_string())
