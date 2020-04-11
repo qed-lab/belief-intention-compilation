@@ -51,7 +51,8 @@ class BeliefCompiledProblem:
         base_preds = self.base_domain.predicates
         breds = []
         for pred in base_preds:
-            breds.append(fluenttree.AbstractPredicate(f"believes-{pred.identifier} ?who - character " + ' '.join([p + ' - ' + t for p, t in zip(pred.parameters, pred.types)])))
+            breds.append(fluenttree.AbstractPredicate(f"believes_not_{pred.identifier} ?who - character " + ' '.join([p + ' - ' + t for p, t in zip(pred.parameters, pred.types)])))
+            breds.append(fluenttree.AbstractPredicate(f"believes_{pred.identifier} ?who - character " + ' '.join([p + ' - ' + t for p, t in zip(pred.parameters, pred.types)])))
         return base_preds + breds
 
     def find_init_state(self):
