@@ -97,8 +97,10 @@ def generate_belief_action(original_action, suffix):
         dupe.precondition.child_trees.append(prec_not_met_tree)
         dupe.effect = convert_effects_minimally(original_action.fail, original_action.agents)
 
+    dupe.precondition = super_simplify_formula(dupe.precondition)
     flatten_beliefs_with_not(dupe.precondition)
-    simplify_formula(dupe.precondition)
+    dupe.precondition = super_simplify_formula(dupe.precondition)
+    # simplify_formula(dupe.precondition)
     return dupe
 
 
@@ -106,7 +108,7 @@ def make_beleaves(ft, agent):  # TODO: Make special cases for "for all" and "whe
     if ft.is_leaf:
         ft.identifier = "believes_" + ft.identifier
         ft.words.insert(1, agent)
-    elif ft.is_not and len(ft.child_trees) == 1 and ft.child_trees[0].is_leaf:
+    elif ft.identifier == "not" and len(ft.child_trees) == 1 and ft.child_trees[0].is_leaf:
         leaf_pred = fluenttree.AbstractPredicate(ft.child_trees[0])
         ft.identifier = "believes_not_" + leaf_pred.identifier
         ft.words = [ft.identifier, agent] + leaf_pred.parameters
@@ -144,7 +146,7 @@ def flatten_beliefs(ft):
 
 def flatten_beliefs_with_not(ft):
     if ft.is_belief:
-        if len(ft.child_trees) > 0 and ft.child_trees[0].is_not:
+        if len(ft.child_trees) > 0 and ft.child_trees[0].identifier == "not":
             leaf = fluenttree.AbstractPredicate(ft.child_trees[0].child_trees[0])
             upper = fluenttree.AbstractPredicate(ft)
             ft.identifier = 'believes_not_' + leaf.identifier
@@ -163,7 +165,7 @@ def flatten_beliefs_with_not(ft):
             if not c.is_belief:
                 new_children.append(c)
             else:
-                if len(c.child_trees) > 0 and c.child_trees[0].is_not:
+                if len(c.child_trees) > 0 and c.child_trees[0].identifier == "not":
                     leaf = fluenttree.AbstractPredicate(c.child_trees[0].child_trees[0])
                     upper = fluenttree.AbstractPredicate(c)
                     new_child = fluenttree.FluentTree("believes_not_" + leaf.identifier + ' ' + ' '.join([upper.parameters[0]] + leaf.parameters), depth=c.depth)
@@ -222,11 +224,11 @@ def super_simplify_formula(ft, negated=False):
     ft = deepcopy(ft)
 
     if negated:
-        # if ft.is_not and ft.child_trees[0].is_leaf:
+        # if ft.identifier == "not" and ft.child_trees[0].is_leaf:
         #     return ft.child_trees[0]
 
         # Let nots cancel out
-        if ft.is_not:
+        if ft.identifier == "not":
             ft = super_simplify_formula(ft.child_trees[0], False)
             return cleanup(ft)
 
@@ -254,7 +256,7 @@ def super_simplify_formula(ft, negated=False):
     else:
         if ft.is_leaf:
             return ft
-        if ft.is_not:
+        if ft.identifier == "not":
             ft = super_simplify_formula(ft.child_trees[0], True)
             return cleanup(ft)
 
@@ -300,7 +302,7 @@ def cleanup(ft):
     # and( not(not(f)), ...) -> and( f, ...)
     new_children = []
     for c in ft.child_trees:
-        if c.is_not and c.child_trees[0].is_not:
+        if c.identifier == "not" and c.child_trees[0].identifier == "not":
             new_children.append(c.child_trees[0].child_trees[0])
         else:
             new_children.append(c)
@@ -311,7 +313,7 @@ def cleanup(ft):
     # Blanket remove nots
     # for c in ft.child_trees:
     #     new_children = set()
-    #     if not c.is_leaf and c.is_not:
+    #     if not c.is_leaf and c.identifier == "not":
     #         new_children.add(c.child_trees[0])
     #     else:
     #         new_children.add(c)
@@ -372,6 +374,22 @@ def get_versions_of_expressioned_action(action, predicate_possibilities):
             versions.append(new_action)
 
         return versions
+
+def get_compiled_pddl_from_filenames(dom_filename, prob_filename):
+    dom_string = Utils.get_trimmed_string_from_file(dom_filename)
+    dom_child, _ = Utils.find_child(dom_string)
+
+    prob_string = Utils.get_trimmed_string_from_file(prob_filename)
+    problem_child, _ = Utils.find_child(prob_string)
+
+    prob = Problem.Problem(problem_child)
+    dom = Domain.Domain(dom_child)
+
+    bcp = BeliefCompiledProblem(dom, prob)
+    comp_dom = bcp.compiled_domain.to_pddl()
+    comp_prob = bcp.compiled_problem.to_pddl()
+
+    return comp_dom, comp_prob
 
 
 if __name__ == '__main__':
