@@ -52,6 +52,14 @@ character room thing
 				(at ?character ?roomfrom)
 			)
 			(at ?character ?roomto)
+			(believes_not_at ?character ?character ?roomfrom)
+			(believes_at ?character ?character ?roomto)
+			(not  
+				(believes_at ?character ?character ?roomfrom)
+			)
+			(not  
+				(believes_not_at ?character ?character ?roomto)
+			)
 			(forall  
 				(?char2 - character)
 				(when  
@@ -59,6 +67,12 @@ character room thing
 					(and  
 						(believes_at ?character ?char2 ?roomto)
 						(believes_at ?char2 ?character ?roomto)
+						(not  
+							(believes_not_at ?character ?char2 ?roomto)
+						)
+						(not  
+							(believes_not_at ?char2 ?character ?roomto)
+						)
 					)
 				)
 			)
@@ -71,7 +85,12 @@ character room thing
 							(hidden ?thing)
 						)
 					)
-					(believes_in ?character ?thing ?roomto)
+					(and  
+						(believes_in ?character ?thing ?roomto)
+						(not  
+							(believes_not_in ?character ?thing ?roomto)
+						)
+					)
 				)
 			)
 		)    
@@ -100,7 +119,12 @@ character room thing
 				(locked ?roomto)
 				(at ?character ?roomfrom)
 			)
-			(believes_locked ?character ?roomto)
+			(and  
+				(believes_locked ?character ?roomto)
+				(not  
+					(believes_not_locked ?character ?roomto)
+				)
+			)
 		)    
 
 
@@ -114,10 +138,8 @@ character room thing
 		(and  
 			(believes_at ?informant ?informant ?room)
 			(believes_at ?informant ?informed ?room)
-			(believes_locked ?informant ?room-for-info)
 			(believes_at ?informed ?informant ?room)
 			(believes_at ?informed ?informed ?room)
-			(believes_locked ?informant ?room-for-info)
 			(at ?informant ?room)
 			(at ?informed ?room)
 			(believes_locked ?informant ?room-for-info)
@@ -136,10 +158,8 @@ character room thing
 		(and  
 			(believes_at ?informant ?informant ?room)
 			(believes_at ?informant ?informed ?room)
-			(believes_at ?informant ?character-for-info ?room-for-info)
 			(believes_at ?informed ?informant ?room)
 			(believes_at ?informed ?informed ?room)
-			(believes_at ?informant ?character-for-info ?room-for-info)
 			(at ?informant ?room)
 			(at ?informed ?room)
 			(believes_at ?informant ?character-for-info ?room-for-info)
@@ -158,10 +178,8 @@ character room thing
 		(and  
 			(believes_at ?informant ?informant ?room)
 			(believes_at ?informant ?informed ?room)
-			(believes_unlocked-by ?informant ?room-for-info ?key-for-info)
 			(believes_at ?informed ?informant ?room)
 			(believes_at ?informed ?informed ?room)
-			(believes_unlocked-by ?informant ?room-for-info ?key-for-info)
 			(at ?informant ?room)
 			(at ?informed ?room)
 			(believes_unlocked-by ?informant ?room-for-info ?key-for-info)
@@ -180,10 +198,8 @@ character room thing
 		(and  
 			(believes_at ?informant ?informant ?room)
 			(believes_at ?informant ?informed ?room)
-			(believes_in ?informant ?thing-for-info ?room-for-info)
 			(believes_at ?informed ?informant ?room)
 			(believes_at ?informed ?informed ?room)
-			(believes_in ?informant ?thing-for-info ?room-for-info)
 			(at ?informant ?room)
 			(at ?informed ?room)
 			(believes_in ?informant ?thing-for-info ?room-for-info)
@@ -202,10 +218,8 @@ character room thing
 		(and  
 			(believes_at ?informant ?informant ?room)
 			(believes_at ?informant ?informed ?room)
-			(believes_hidden ?informant ?thing-for-info)
 			(believes_at ?informed ?informant ?room)
 			(believes_at ?informed ?informed ?room)
-			(believes_hidden ?informant ?thing-for-info)
 			(at ?informant ?room)
 			(at ?informed ?room)
 			(believes_hidden ?informant ?thing-for-info)
@@ -224,10 +238,8 @@ character room thing
 		(and  
 			(believes_at ?informant ?informant ?room)
 			(believes_at ?informant ?informed ?room)
-			(believes_has ?informant ?character-for-info ?thing-for-info)
 			(believes_at ?informed ?informant ?room)
 			(believes_at ?informed ?informed ?room)
-			(believes_has ?informant ?character-for-info ?thing-for-info)
 			(at ?informant ?room)
 			(at ?informed ?room)
 			(believes_has ?informant ?character-for-info ?thing-for-info)
@@ -254,6 +266,14 @@ character room thing
 			(has ?character ?thing)
 			(not  
 				(in ?thing ?room)
+			)
+			(believes_has ?character ?character ?thing)
+			(believes_not_in ?character ?thing ?room)
+			(not  
+				(believes_not_has ?character ?character ?thing)
+			)
+			(not  
+				(believes_in ?character ?thing ?room)
 			)
 		)    
 
@@ -285,8 +305,11 @@ character room thing
 				)
 				(at ?character ?room)
 			)
-			(not  
-				(believes_in ?character ?thing ?room)
+			(and  
+				(not  
+					(believes_in ?character ?thing ?room)
+				)
+				(believes_not_in ?character ?thing ?room)
 			)
 		)    
 
@@ -307,8 +330,14 @@ character room thing
 			(has ?character ?key)
 		)
     :effect
-		(not  
-			(locked ?room)
+		(and  
+			(not  
+				(locked ?room)
+			)
+			(believes_not_locked ?character ?room)
+			(not  
+				(believes_locked ?character ?room)
+			)
 		)    
 
 
@@ -344,7 +373,12 @@ character room thing
 					(unlocked-by ?room ?key)
 				)
 			)
-			(believes_not_unlocked-by ?character ?room ?key)
+			(and  
+				(believes_not_unlocked-by ?character ?room ?key)
+				(not  
+					(believes_unlocked-by ?character ?room ?key)
+				)
+			)
 		)    
 
 

@@ -15,11 +15,9 @@ def log_error(message):
         err_log.write(message)
 
 
-
 # start_time = TIMER.time()
 # os.system(cmd + DEVNULL)
 # time = TIMER.time() - start_time
-
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="")
@@ -28,13 +26,13 @@ if __name__ == '__main__':
     parser.add_argument('solution', help="Where the resulting plan is stored")
 
     parser.add_argument('--glaive-path', default='../Glaive/glaive.jar', nargs='?', required=False, help="Path to the GLAIVE .jar (or other narrative planner)")
-    parser.add_argument('--glaive-dom', default='TestFiles/glaive-dom.pddl', nargs='?', required=False, help="Optionally choose the place to store the intermediate intentional domain that is fed to GLAIVE")
-    parser.add_argument('--glaive-prob', default='TestFiles/glaive-prob.pddl', nargs='?', required=False, help="Optionally choose the place to store the intermediate intentional problem that is fed to GLAIVE")
-    parser.add_argument('--glaive-plan', default='TestFiles/glaive-plan.pddl', nargs='?', required=False, help="Optionally choose the place to store the intermediate plan that is gathered from GLAIVE")
+    parser.add_argument('--glaive-dom', default='../TestFiles/glaive-dom.pddl', nargs='?', required=False, help="Optionally choose the place to store the intermediate intentional domain that is fed to GLAIVE")
+    parser.add_argument('--glaive-prob', default='../TestFiles/glaive-prob.pddl', nargs='?', required=False, help="Optionally choose the place to store the intermediate intentional problem that is fed to GLAIVE")
+    parser.add_argument('--glaive-plan', default='../TestFiles/glaive-plan.pddl', nargs='?', required=False, help="Optionally choose the place to store the intermediate plan that is gathered from GLAIVE")
     parser.add_argument('--glaive-args', default=[], nargs=argparse.REMAINDER, required=False, help="Other arguments to pass to GLAIVE")
 
     # args = parser.parse_args()
-    args = parser.parse_args("samples/rooms-domain.pddl samples/rooms-problem.pddl samples/rooms-plan.txt --glaive-args -s -pp samples/rooms-partial-plan.txt".split()) # -pp samples/rooms-partial-plan.txt
+    args = parser.parse_args("../samples/rooms-domain.pddl ../samples/rooms-problem.pddl ../samples/rooms-plan.txt --glaive-args -s -pp ../samples/rooms-partial-plan.txt".split()) # -pp samples/rooms-partial-plan.txt
     print(args)
 
     comp_dom, comp_prob = belief_compilation.get_compiled_pddl_from_filenames(args.domain, args.problem)
@@ -61,7 +59,7 @@ if __name__ == '__main__':
     with open(args.glaive_plan, 'r') as glaive_plan_in:
         plan_str = glaive_plan_in.read()
 
-    decompiled_plan = decompile_glaive.decompile(plan_str)
+    decompiled_plan = decompile_glaive.decompile(plan_str, '../samples/rooms-domain.pddl')
 
 
     with open(args.solution, 'w') as plan_out:
