@@ -46,7 +46,7 @@ class Domain(PDDLPart.PDDLPart):
     {self.type_string}
     )
     (:predicates
-        {(nl+tab+tab).join([str(p) for p in self.predicates])}
+        {(nl+tab+tab).join(["(" + p.typed_string() + ")" for p in self.predicates])}
     )
     {(nl+tab).join([str(x) for x in self.actions if x.effect.identifier != ""])}
 )
