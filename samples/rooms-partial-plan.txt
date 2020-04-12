@@ -1,0 +1,4 @@
+(define (plan six-rooms-bompiled-solution)
+  (:problem six-rooms-bompiled)
+  (:steps (speak-to-in_success informant2 key r4 alice r6)
+          ))

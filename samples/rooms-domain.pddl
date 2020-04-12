@@ -31,23 +31,36 @@
             (and
                 (not (at ?character ?roomfrom))
                 (at ?character ?roomto)
+                (believes ?character (not (at ?character ?roomfrom)))
+                (believes ?character (at ?character ?roomto))
+                (not (believes ?character (at ?character ?roomfrom)))
+                (not (believes ?character (not (at ?character ?roomto))))
+
                 (forall (?char2 - character)
                     (when (at ?char2 ?roomto)
                         (and
                             (believes ?character (at ?char2 ?roomto))
                             (believes ?char2 (at ?character ?roomto))
+                            (not (believes ?character (not (at ?char2 ?roomto))))
+                            (not (believes ?char2 (not (at ?character ?roomto))))
                         )
                     )
                 )
                 (forall (?thing - thing)
                     (when (and (in ?thing ?roomto) (not (hidden ?thing)))
-                        (believes ?character (in ?thing ?roomto))
+                        (and
+                            (believes ?character (in ?thing ?roomto))
+                            (not (believes ?character (not (in ?thing ?roomto))))
+                        )
                     )
                 )
             )
         :fail
             (when (and (locked ?roomto) (at ?character ?roomfrom) )
-                (believes ?character (locked ?roomto))
+                (and
+                    (believes ?character (locked ?roomto))
+                    (not (believes ?character (not (locked ?roomto))))
+                )
             )
         :agents
             (?character)
@@ -64,7 +77,8 @@
                 (believes ?informant ?info)  ;; For the informant to do this action, need they believe that they believe?
             )
         :effect
-            (believes ?informed ?info) ;; Future versions may do this differently, allowing lies, trust/mistrust
+            (believes ?informed ?info)
+            (not (believes ?informed (not ?info))) ;; Future versions may do this differently, allowing lies, trust/mistrust
 
         :fail () ;; Possibly the informed disbelieves the info if the informant disbelieves it
         :agents (?informant ?informed)
@@ -124,10 +138,18 @@
             (and
                 (has ?character ?thing)
                 (not (in ?thing ?room))
+
+                (believes ?character (has ?character ?thing))
+                (believes ?character (not (in ?thing ?room)))
+                (not (believes ?character (not (has ?character ?thing))))
+                (not (believes ?character (in ?thing ?room)))
             )
         :fail
             (when (and (not (in ?thing ?room)) (at ?character ?room))
-                (not (believes ?character (in ?thing ?room)))
+                (and
+                    (not (believes ?character (in ?thing ?room)))
+                    (believes ?character (not (in ?thing ?room)))
+                )
             )
         :agents (?character)
     )
@@ -144,10 +166,15 @@
         :effect
             (and
                 (not (locked ?room))
+                (believes ?character (not (locked ?room)))
+                (not (believes ?character (locked ?room)))
             )
         :fail
             (when (and (locked ?room) (has ?character ?key) (not (unlocked-by ?room ?key)))
-                (believes ?character (not (unlocked-by ?room ?key)))
+                (and
+                    (believes ?character (not (unlocked-by ?room ?key)))
+                    (not (believes ?character (unlocked-by ?room ?key)))
+                )
             )
         :agents (?character)
     )
