@@ -49,11 +49,11 @@ class BeliefCompiledProblem:
 
     def find_predicates(self):
         base_preds = self.base_domain.predicates
-        breds = []
+        bredicates = []
         for pred in base_preds:
-            breds.append(fluenttree.AbstractPredicate(f"believes_not_{pred.identifier} ?who - character " + ' '.join([p + ' - ' + t for p, t in zip(pred.parameters, pred.types)])))
-            breds.append(fluenttree.AbstractPredicate(f"believes_{pred.identifier} ?who - character " + ' '.join([p + ' - ' + t for p, t in zip(pred.parameters, pred.types)])))
-        return base_preds + breds
+            bredicates.append(fluenttree.AbstractPredicate(f"believes_not_{pred.identifier} ?who - character " + ' '.join([p + ' - ' + t for p, t in zip(pred.parameters, pred.types)])))
+            bredicates.append(fluenttree.AbstractPredicate(f"believes_{pred.identifier} ?who - character " + ' '.join([p + ' - ' + t for p, t in zip(pred.parameters, pred.types)])))
+        return base_preds + bredicates
 
     def find_init_state(self):
         state = []
@@ -91,7 +91,6 @@ def generate_belief_action(original_action, suffix):
     # dupe.precondition = convert_to_belief_string(original_action.precondition)
     dupe.precondition = fluenttree.FluentTree("and ")
     dupe.precondition.is_leaf = False
-    dupe.precondition.child_trees += belief_sets
 
     if suffix == "success":
         dupe.precondition.child_trees.append(deepcopy(original_action.precondition))
@@ -102,6 +101,10 @@ def generate_belief_action(original_action, suffix):
         prec_not_met_tree.child_trees.append(deepcopy(original_action.precondition))
         dupe.precondition.child_trees.append(prec_not_met_tree)
         dupe.effect = convert_effects_minimally(original_action.fail, original_action.agents)
+
+    # THIS HAS TO COME AFTER THE REAL EFFECTS OR ELSE GLAIVE BREAKS
+    dupe.precondition.child_trees += belief_sets
+
 
     dupe.precondition = super_simplify_formula(dupe.precondition)
     flatten_beliefs_with_not(dupe.precondition)

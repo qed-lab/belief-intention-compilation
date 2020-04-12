@@ -135,7 +135,7 @@ class AbstractPredicate:
         return res
 
     def typed_string(self):
-        return " ".join([p + " - " + t for p,t in zip(self.parameters, self.types)])
+        return  self.identifier + " " + " ".join([p + " - " + t for p,t in zip(self.parameters, self.types)])
 
 
     # def __eq__(self, other):
