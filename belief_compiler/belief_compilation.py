@@ -57,10 +57,13 @@ class BeliefCompiledProblem:
 
     def find_init_state(self):
         state = []
-        for pred in [fluenttree.AbstractPredicate(c) for c in self.base_problem.init_state]:
-            if pred.is_belief:
-                pred = fluenttree.AbstractPredicate(f"believes_{pred.identifier} {' '.join(pred.parameters)}")
-            state.append(pred)
+        for pred in self.base_problem.init_state: #[fluenttree.AbstractPredicate(c) for c in self.base_problem.init_state]:
+            # if pred.is_belief and not pred.is_not:
+            #     pred = fluenttree.AbstractPredicate(f"believes_{pred.identifier} {' '.join(pred.parameters)}")
+            # elif pred.is_belief and pred.is_not:
+            #     pred = fluenttree.AbstractPredicate(f"believes_not{pred.identifier} {' '.join(pred.parameters)}")
+            flatten_beliefs_with_not(pred)
+            state.append(fluenttree.AbstractPredicate(pred))
 
 
         return state
@@ -81,6 +84,8 @@ def generate_belief_action(original_action, suffix):
     belief_sets = []
     for agent in original_action.agents:
         copied_preconditions = deepcopy(original_action.precondition)
+        copied_preconditions.child_trees = [x for x in copied_preconditions.child_trees if not x.is_belief]
+
         make_beleaves(copied_preconditions, agent)
         belief_sets.append(copied_preconditions)
     # dupe.precondition = convert_to_belief_string(original_action.precondition)
