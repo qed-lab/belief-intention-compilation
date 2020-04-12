@@ -25,6 +25,9 @@ def get_question_mark_sections(to_split):
 
 def find_child(to_parse):
 
+    if not verify_parens(to_parse):
+        raise SyntaxError("Unbalanced Parentheses:" + '\n' + to_parse)
+
     count = 0
     remaining_string = to_parse
     start_idx = remaining_string.find('(')
@@ -55,6 +58,22 @@ def get_trimmed_string_from_file(file):
                 res += trimmed + '\n'
     return res
 
+def verify_parens(domain_string):
+    count = 0
+    remaining_string = domain_string
+    while remaining_string.find('(') >= 0 or remaining_string.find(')') >= 0:
+        left_idx = remaining_string.find('(')
+        right_idx = remaining_string.find(')')
+        if right_idx > left_idx >= 0:
+            split = left_idx
+            count += 1
+        else:
+            split = right_idx
+            count -= 1
+        remaining_string = remaining_string[split + 1:]
+        if count < 0:
+            return False
+    return count == 0
 
 def send_to_file(file, string):
     with open(file, 'w') as f_writer:
