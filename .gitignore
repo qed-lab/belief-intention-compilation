@@ -128,3 +128,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+TestFiles/glaive-plan.pddl
+TestFiles/glaive-dom.pddl
+TestFiles/ss.txt
+TestFiles/glaive-dom.pddl
+samples/rooms-plan.txt
+TestFiles/glaive-dom.pddl
