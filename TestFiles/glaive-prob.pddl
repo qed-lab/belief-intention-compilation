@@ -4,8 +4,8 @@
     (:objects
         :objects
 alice - character
-informant1 - character
-informant2 - character
+letter1 - character
+letter2 - character
 key - key
 star - star
 r1 - room
@@ -17,20 +17,26 @@ r6 - room
 
     )
     (:init
-        (at informant1 r2)
-	(at informant2 r6)
+        (at letter1 r2)
+	(at letter2 r6)
 	(at alice r3)
 	(in key r4)
 	(in star r5)
 	(locked r5)
 	(unlocked-by r5 key)
-	(believes_in alice star r1)
+	(believes_at alice alice r3)
+	(believes_not_locked alice r1)
+	(believes_not_locked alice r2)
+	(believes_not_locked alice r3)
+	(believes_not_locked alice r4)
+	(believes_not_locked alice r5)
+	(believes_not_locked alice r6)
 	(intends alice (has alice star))
-	(intends informant1 (has alice star))
-	(intends informant1 (has alice star))
-	(believes_in informant1 star r5)
-	(believes_in informant2 key r4)
-	(believes_unlocked-by informant2 r5 key)
+	(believes_in letter1 star r5)
+	(believes_in letter2 key r4)
+	(believes_unlocked-by letter2 r5 key)
+	(believes_at letter1 letter1 r2)
+	(believes_at letter2 letter2 r6)
     )
     (:goal
 		(has alice star)
