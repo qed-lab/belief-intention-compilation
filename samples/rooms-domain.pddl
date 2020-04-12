@@ -6,8 +6,7 @@
 (define (domain rooms)
     (:requirements :adl :universal-preconditions :expression-variables :intentionality :belief)
     (:types
-        ;;;letter
-        key star - thing
+        letter key star - thing
         character room thing
     )
     (:predicates
@@ -15,7 +14,7 @@
         (at ?character - character ?room - room)
         (unlocked-by ?room - room ?key - key)
         (in ?thing - thing ?room - room)
-        (hidden ?thing - thing)
+        ;;(hidden ?thing - thing)
         (has ?character - character ?thing - thing)
     )
 
@@ -46,14 +45,14 @@
                         )
                     )
                 )
-                (forall (?thing - thing)
-                    (when (and (in ?thing ?roomto) (not (hidden ?thing)))
-                        (and
-                            (believes ?character (in ?thing ?roomto))
-                            (not (believes ?character (not (in ?thing ?roomto))))
-                        )
-                    )
-                )
+                ;;(forall (?thing - thing)
+                ;;    (when (and (in ?thing ?roomto) (not (hidden ?thing)))
+                ;;        (and
+                ;;            (believes ?character (in ?thing ?roomto))
+                ;;            (not (believes ?character (not (in ?thing ?roomto))))
+                ;;        )
+                ;;    )
+                ;;)
             )
         :fail
             (when (and (locked ?roomto) (at ?character ?roomfrom) )
@@ -67,7 +66,7 @@
     )
 
 
-    ;; An informant tells the character something they believe
+    ; An informant tells the character something they believe
     (:action speak-to
         :parameters  (?informant - character ?info - expression ?informed - character ?room - room)
         :precondition
@@ -82,6 +81,23 @@
 
         :fail () ;; Possibly the informed disbelieves the info if the informant disbelieves it
         :agents (?informant ?informed)
+    )
+
+    ;; An letter tells the character something the letter believes.
+    (:action read-letter
+        :parameters  (?letter - character ?info - expression ?informed - character ?room - room)
+        :precondition
+            (and
+                (at ?letter ?room)
+                (at ?informed ?room)
+                (believes ?letter ?info)  ;; For the informant to do this action, need they believe that they believe?
+            )
+        :effect
+            (believes ?informed ?info)
+            (not (believes ?informed (not ?info))) ;; Future versions may do this differently, allowing lies, trust/mistrust
+
+        :fail () ;; Possibly the informed disbelieves the info if the informant disbelieves it
+        :agents (?informed)
     )
 
 ;;
