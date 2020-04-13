@@ -1,31 +1,27 @@
 
-(define (problem six-rooms-bompiled)
-    (:domain rooms-bompiled)
+(define (problem evil-cloud-bompiled)
+    (:domain heroes-journey-bompiled)
     (:objects
         :objects
 alice - character
-letter1 - character
-letter2 - character
-key - key
-star - star
-r1 - room
-r2 - room
-r3 - room
-r4 - room
-r5 - room
-r6 - room
+bob - character
+evil-cloud - existential-threat
+dagonia - village
+mount-doom - mountain
+the-power - superpower
 
     )
     (:init
-        (at letter1 r2)
-	(at letter2 r6)
-	(at alice r3)
-	(in key r4)
-	(in star r5)
-	(hidden key)
-	(loc
+        (in evil-cloud dagonia)
+	(at alice dagonia)
+	(at bob mount-doom)
+	(believes_at alice alice dagonia)
+	(believes_at bob bob mount-doom)
+	(believes_at alice bob mount-doom)
+	(wields alice the-power)
     )
     (:goal
-		(has alice key)
+		(safe dagonia)
     )
 )
+

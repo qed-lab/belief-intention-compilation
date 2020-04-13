@@ -1,13 +1,14 @@
 from pddl.PDDLPart import PDDLPart
 from pddl.Domain import Domain
 from pddl import Utils
-import Math
 
 
 # TODO: This whole decomp process
 def get_steps(plan):
     pddl = PDDLPart(plan)
-    steps = pddl.children[0].children[2].children
+    plan_summary = PDDLPart(pddl.children[0])
+    step_section = PDDLPart(plan_summary.children[2])
+    steps = step_section.children
     return steps
 
 
@@ -20,14 +21,15 @@ def decompile(plan_str, original_domain_file):
     action_names = [x.name for x in orig_actions]
     decompiled_plan = []
     for step in steps:
-        if ":untaken" in step.string:
+        if ":untaken" in step:
             continue
-        trimmed_name = step.string[:Math.max(step.find("_success"), step.find("_fail"))]
+        trimmed_name = step[:max(step.find("_success"), step.find("_fail"))]
         trimmed_params = 2
         int_str = trimmed_name + str(trimmed_params)
-        if trimmed_name in action_names:
-            decompiled_plan.append(int_str)
-        else:
-            pass
+        decompiled_plan.append(trimmed_name)
+        # if trimmed_name in action_names:
+        #     decompiled_plan.append(int_str)
+        # else:
+        #     pass
 
-    return plan_str
+    return str(decompiled_plan)

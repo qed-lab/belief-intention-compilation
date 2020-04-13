@@ -31,6 +31,9 @@ class BeliefCompiledProblem:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;"""
         self.compiled_domain.requirements = self.base_domain.requirements
         self.compiled_domain.requirements.remove(':belief')
+        self.compiled_domain.requirements.append(':intentionality')
+        self.compiled_domain.requirements.append(':disjunctive-preconditions')
+        self.compiled_domain.requirements.append(':negative-preconditions')
         self.compiled_domain.predicates = self.find_predicates()
         self.compiled_domain.actions = self.find_actions()
 
@@ -39,6 +42,7 @@ class BeliefCompiledProblem:
         for act in self.base_domain.actions:
             for grounded_act in get_versions_of_expressioned_action(act, self.base_domain.predicates):
                 if len(grounded_act.agents) == 0:
+                    flatten_beliefs_with_not(grounded_act.effect)
                     actions.append(grounded_act)
                 else:
                     successful = generate_belief_action(grounded_act, "success")
