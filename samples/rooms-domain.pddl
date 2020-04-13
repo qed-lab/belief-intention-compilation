@@ -1,8 +1,6 @@
-;;;
-;;; A domain for telling the story of Aladdin from 1001 Nights
-;;; Created by Mark O. Riedl for his dissertation
-;;; Ported to PDDL 3 and modified to use the 'delegated' modality by Stephen G. Ware
-;;;
+
+
+
 (define (domain rooms)
     (:requirements :adl :universal-preconditions :expression-variables :intentionality :belief)
     (:types
@@ -67,23 +65,43 @@
 
 
     ; An informant tells the character something they believe
-    (:action speak-to
-        :parameters  (?informant - character ?info - expression ?informed - character ?room - room)
-        :precondition
-            (and
-                (at ?informant ?room)
-                (at ?informed ?room)
-                (believes ?informant ?info)  ;; For the informant to do this action, need they believe that they believe?
-            )
-        :effect
-            (believes ?informed ?info)
-            (not (believes ?informed (not ?info))) ;; Future versions may do this differently, allowing lies, trust/mistrust
+    ;(:action speak-to
+    ;    :parameters  (?informant - character ?info - expression ?informed - character ?room - room)
+    ;    :precondition
+    ;        (and
+    ;            (at ?informant ?room)
+    ;            (at ?informed ?room)
+    ;            (believes ?informant ?info)  ;; For the informant to do this action, need they believe that they believe?
+    ;        )
+    ;    :effect
+    ;        (believes ?informed ?info)
+    ;        (not (believes ?informed (not ?info))) ;; Future versions may do this differently, allowing lies, trust/mistrust
+;
+    ;    :fail () ;; Possibly the informed disbelieves the info if the informant disbelieves it
+    ;    :agents (?informant ?informed)
+    ;)
 
-        :fail () ;; Possibly the informed disbelieves the info if the informant disbelieves it
-        :agents (?informant ?informed)
-    )
+    ; An informant tells the character something they believe
+    ;(:action trade-facts
+    ;    :parameters  (?informant1 - character ?info1 - expression ?informant2 - character ?info2 - expression ?room - room)
+    ;    :precondition
+    ;        (and
+    ;            (at ?informant1 ?room)
+    ;            (at ?informant2 ?room)
+    ;            (believes ?informant1 ?info1)
+    ;            (believes ?informant2 ?info2)
+    ;        )
+    ;    :effect
+    ;        (believes ?informant1 ?info2)
+    ;        (believes ?informant2 ?info1)
+    ;        (not (believes ?informant1 (not ?info2)))
+    ;        (not (believes ?informant2 (not ?info1)))
+;
+    ;    :fail () ;; Possibly the informed disbelieves the info if the informant disbelieves it
+    ;    :agents (?informant1 ?informant2)
+    ;)
 
-    ;; An letter tells the character something the letter believes.
+    ; An letter tells the character something the letter believes.
     (:action read-letter
         :parameters  (?letter - character ?info - expression ?informed - character ?room - room)
         :precondition
