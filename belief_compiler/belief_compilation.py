@@ -381,7 +381,7 @@ def get_versions_of_expressioned_action(action, predicate_possibilities):
             new_action.precondition = new_pre
             new_action.effect = new_eff
             new_action.fail = new_fail
-            new_action.name = f"{action.name}-{'-'.join([inst.identifier for inst in instantiation])}"
+            new_action.name = f"{action.name}__{'_'.join([inst.identifier for inst in instantiation])}"
             new_action.agents = action.agents
 
             versions.append(new_action)
