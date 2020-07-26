@@ -426,5 +426,3 @@ if __name__ == '__main__':
     # comp_prob = bcp.compiled_problem.to_pddl()
     print(comp_dom)
     # Utils.send_to_file(r'../samples/compiled/rooms-domain_bompiled.pddl', comp_dom)
-
-

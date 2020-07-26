@@ -1,9 +1,10 @@
-import os
+import os, sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 import time as TIMER
 import argparse
-
 import belief_compilation
 import decompile_glaive
+
 
 # DEVNULL = " > /dev/null"
 DEVNULL = " "
@@ -25,15 +26,15 @@ if __name__ == '__main__':
     parser.add_argument('problem', help="The belief-intention problem (PDDL)")
     parser.add_argument('solution', help="Where the resulting plan is stored")
 
-    parser.add_argument('--glaive-path', default='../Glaive/glaive.jar', nargs='?', required=False, help="Path to the GLAIVE .jar (or other narrative planner)")
+    parser.add_argument('--glaive-path', default='resources/glaive.jar', nargs='?', required=False, help="Path to the GLAIVE .jar (or other narrative planner)")
     parser.add_argument('--glaive-dom', default='TestFiles/glaive-dom.pddl', nargs='?', required=False, help="Optionally choose the place to store the intermediate intentional domain that is fed to GLAIVE")
     parser.add_argument('--glaive-prob', default='TestFiles/glaive-prob.pddl', nargs='?', required=False, help="Optionally choose the place to store the intermediate intentional problem that is fed to GLAIVE")
-    parser.add_argument('--glaive-plan', default='TestFiles/glaive-plan.pddl', nargs='?', required=False, help="Optionally choose the place to store the intermediate plan that is gathered from GLAIVE")
+    parser.add_argument('--glaive-plan', default='TestFiles/glaive-plan.pddl', nargs='?', required=False, help="Optionally choose the place to store the plan that is gathered from GLAIVE")
     parser.add_argument('--glaive-args', default=[], nargs=argparse.REMAINDER, required=False, help="Other arguments to pass to GLAIVE")
 
-    # args = parser.parse_args()
-    args = parser.parse_args("../samples/journey-domain.pddl ../samples/journey-problem.pddl ../samples/journey-plan.txt --glaive-args -s".split()) # -pp samples/rooms-partial-plan.txt -ws TestFiles/ss.txt
-    print(args)
+    args = parser.parse_args()
+    # args = parser.parse_args("samples/journey-domain.pddl samples/journey-problem.pddl samples/journey-plan.txt --glaive-args -s".split()) # -pp samples/rooms-partial-plan.txt -ws TestFiles/ss.txt
+    # print(args)
 
     comp_dom, comp_prob = belief_compilation.get_compiled_pddl_from_filenames(args.domain, args.problem)
     print("Compiled Domain")
