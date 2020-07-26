@@ -32,7 +32,7 @@ if __name__ == '__main__':
     parser.add_argument('--glaive-args', default=[], nargs=argparse.REMAINDER, required=False, help="Other arguments to pass to GLAIVE")
 
     # args = parser.parse_args()
-    args = parser.parse_args("samples/rooms-domain.pddl samples/rooms-problem.pddl samples/rooms-plan.txt --glaive-args -s".split()) # -pp samples/rooms-partial-plan.txt -ws TestFiles/ss.txt
+    args = parser.parse_args("../samples/journey-domain.pddl ../samples/journey-problem.pddl ../samples/journey-plan.txt --glaive-args -s".split()) # -pp samples/rooms-partial-plan.txt -ws TestFiles/ss.txt
     print(args)
 
     comp_dom, comp_prob = belief_compilation.get_compiled_pddl_from_filenames(args.domain, args.problem)
