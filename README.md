@@ -1,7 +1,7 @@
 # belief-intention-compilation
 A compiler that will convert Belief and Intentional PDDL into a form that can be handled by an intentional Planner, such as [Glaive](https://nil.cs.uno.edu/projects/glaive/)
 
-Belief and Intentional PDDL differs from PDDL by supporting 2nd order `(intends character predicate)` and `(believes character predicate)` predicates. 
+Belief and Intentional PDDL differs from PDDL by supporting 2nd order `(intends ?character ?predicate)` and `(believes ?character ?predicate)` predicates. 
 Intentional PDDL supports actions that a character *tries* and *may fail* at, causing a separate set of failure effects.
 
 Written by Matthew Christensen and Jennifer Nelson for the following paper:
