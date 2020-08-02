@@ -385,7 +385,7 @@ def get_versions_of_expressioned_action(action, predicate_possibilities):
             new_action.precondition = new_pre
             new_action.effect = new_eff
             new_action.fail = new_fail
-            new_action.name = f"{action.name}-{'-'.join([inst.identifier for inst in instantiation])}"
+            new_action.name = f"{action.name}__{'_'.join([inst.identifier for inst in instantiation])}"
             new_action.agents = action.agents
 
             versions.append(new_action)
@@ -426,5 +426,3 @@ if __name__ == '__main__':
     # comp_prob = bcp.compiled_problem.to_pddl()
     print(comp_dom)
     # Utils.send_to_file(r'../samples/compiled/rooms-domain_bompiled.pddl', comp_dom)
-
-
