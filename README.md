@@ -10,10 +10,11 @@ Written by Matthew Christensen and Jennifer Nelson for the following paper:
 > Matthew Christensen, Jennifer M. Nelson, and Rogelio E. Cardona-Rivera    
 > The 16th AAAI Conference on Artificial Intelligence and Interactive Digital Entertainment (AIIDE-20) 
 
-
 ### Using the tool
 
-    usage: belief-intention-system.py [-h] [--glaive-path [GLAIVE_PATH]]
+Code was written and tested on python version 3.6
+
+    usage: python3 belief-intention-system.py [-h] [--glaive-path [GLAIVE_PATH]]
                                       [--glaive-dom [GLAIVE_DOM]]
                                       [--glaive-prob [GLAIVE_PROB]]
                                       [--glaive-plan [GLAIVE_PLAN]]
@@ -51,3 +52,10 @@ Notes:
  
 ### Replicating the Paper
 
+The below script was used to generate the timing numbers and figures in the paper.
+
+    python3 timing_analysis.py
+    
+Requires scipy, numpy and pyplot (can comment out creating the violinplots)
+
+Domains used in the paper can be found in the "paper_domains" folder.
